@@ -4,50 +4,63 @@ import axios from 'axios';
 const createStore = () => {
     return new Vuex.Store({
         state: {
-            token: null
+            token: localStorage.getItem('token'),
+            user: {}
         },
         mutations: {
-            setToken(state, token){
-                state.token = token
+            setUserId(state, userId) {
+                state.user.id = userId;
             },
-            removeToken(state){
+            setToken(state, token) {
+                state.token = token;
+            },
+            clearUser(state) {
+                state.user = {}
+            },
+            clearToken(state) {
                 state.token = null;
             }
         },
         actions: {
-            onLogin({commit}, authData){
-                return axios.post(`${process.env.baseAuthUrl}accounts:signInWithPassword?key=${process.env.fbAPIKey}`, {
-                    email: authData.email,
-                    password: authData.password,
-                    returnSecureToken: true
+            setUserId({ commit }, userId) {
+                commit('setUserId', userId);
+            },
+            setToken({ commit }, token) {
+                commit('setToken', token);
+            },
+            onLogin({ commit }, formData) {
+                return axios.post(`${process.env.baseUrl}/auth/login`, {
+                    ...formData
                 }).then(res => {
-                    localStorage.setItem('token', res.data.idToken);
-                    commit('setToken', res.data.idToken);
+                    commit('setUserId', res.data.userId);
+                    commit('setToken', res.data.token);
+                    return Promise.resolve(res.data);
                 }).catch(error => {
-                    return true;
-                })
+                    return Promise.reject(error.response);
+                });
             },
-            onSignUp({commit}, formData){
-                return axios.post(`${process.env.baseAuthUrl}accounts:signUp?key=${process.env.fbAPIKey}`, {
-                    email: formData.email,
-                    password: formData.password,
-                    returnSecureToken: true
+            onSignup({ commit }, formData) {
+                return axios.put(`${process.env.baseUrl}/auth/signup`, {
+                    ...formData
                 }).then(res => {
-                    localStorage.setItem('token', res.data.idToken);
-                    commit('setToken', res.data.idToken);
-                })
+                    commit('setUserId', res.data.userId);
+                    commit('setToken', res.data.token);
+                    return Promise.resolve(res.data);
+                }).catch(error => {
+                    return Promise.reject(error.response);
+                });
             },
-            initToken({commit}){
-                commit('setToken', localStorage.getItem('token'));
-            },
-            onLogout({commit}){
-                localStorage.removeItem('token');
-                commit('removeToken')
+            onLogout({ commit }) {
+                commit('clearUser');
+                commit('clearToken');
             }
         },
         getters: {
+            getUser(state) {
+                return state.user;
+            },
             getToken(state) {
-                return state.token;
+                return state.token
             }
         }
     })
