@@ -7,18 +7,24 @@
       bottom
       right
       fixed
-      color="green"
+      color="pink darken-1"
       @click="addPersonOverlay = true;"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
-    <v-container>
+    <v-container fluid>
       <v-row>
-        <v-col cols="4" md="3" v-for="(person, index) in people" :key="person._id">
-          <v-card class="mx-auto" max-width="344" elevation="5">
-            <v-img :src="person.imageUrl" height="100px"></v-img>
+        <v-col cols="12" md="3" v-for="(person, index) in people" :key="person._id">
+          <v-card elevation="5">
+            <v-img :src="person.imageUrl" height="130px"></v-img>
             <v-card-title>{{person.name}}</v-card-title>
             <v-card-subtitle>{{person.degree}}</v-card-subtitle>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-card-text v-on="on">Counter: {{person.counter}}</v-card-text>
+              </template>
+              <span>How many times this person was detected</span>
+            </v-tooltip>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn dark small color="teal lighten-1" @click="onEditPerson(index)">
@@ -27,6 +33,19 @@
               <v-btn dark small color="red darken-2" @click="onDeletePerson(index)">
                 <v-icon small>fas fa-trash-alt</v-icon>
               </v-btn>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    dark
+                    small
+                    color="red darken-2"
+                    v-on="on"
+                    @click="resetCounter(index)"
+                    text
+                  >Reset</v-btn>
+                </template>
+                <span>Reset the counter of the person (how many time he was detected)</span>
+              </v-tooltip>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -63,6 +82,11 @@
                       type="text"
                     />
                   </v-form>
+                  <v-switch v-model="formData.doCount" label="Would count this person?"></v-switch>
+                  <v-switch
+                    v-model="formData.doNotify"
+                    label="Would you be notified whe we saw this person?"
+                  ></v-switch>
                   <v-file-input
                     v-model="image"
                     accept="image/png, image/jpeg, image/bmp"
@@ -117,6 +141,11 @@
                       name="degree"
                       type="text"
                     />
+                    <v-switch v-model="formData.doCount" label="Would count this person?"></v-switch>
+                    <v-switch
+                      v-model="formData.doNotify"
+                      label="Would you be notified whe we saw this person?"
+                    ></v-switch>
                   </v-form>
                   <v-file-input
                     v-model="image"
@@ -184,7 +213,9 @@ export default {
       people: [],
       formData: {
         name: "",
-        degree: ""
+        degree: "",
+        doCount: false,
+        doNotify: true
       },
       editPersonIndex: "",
       deletePersonIndex: "",
@@ -214,7 +245,7 @@ export default {
       fileData.append("image", this.image);
       axios
         .post(
-          `${process.env.baseUrl}/people?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}`,
+          `${process.env.baseUrl}/people?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doCount=${this.formData.doCount}&doNotify=${this.formData.doNotify}`,
           fileData,
           {
             headers: {
@@ -224,15 +255,17 @@ export default {
           }
         )
         .then(response => {
-          this.$nuxt.$loading.finish();
           this.snackbar = true;
           this.logMessage = response.data.message;
           this.sbcolor = "success";
           this.people.push(response.data.person);
+          user.people = this.people;
+          this.$store.dispatch("setUser", user);
           this.addPersonOverlay = false;
           this.formData.name = "";
           this.formData.degree = "";
           this.image = null;
+          this.$nuxt.$loading.finish();
         })
         .catch(error => {
           this.$nuxt.$loading.finish();
@@ -245,12 +278,16 @@ export default {
       this.editPersonOverlay = true;
       this.formData.name = this.people[index].name;
       this.formData.degree = this.people[index].degree;
+      this.formData.doCount = this.people[index].doCount;
+      this.formData.doNotify = this.people[index].doNotify;
       this.editPersonIndex = index;
     },
     closeEditPerson() {
       this.editPersonOverlay = false;
       this.formData.name = "";
       this.formData.degree = "";
+      this.formData.doCount = false;
+      this.formData.doNotify = true;
       this.editPersonIndex = "";
     },
     editPerson(index) {
@@ -261,7 +298,7 @@ export default {
         fileData.append("image", this.image);
         axios
           .put(
-            `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}`,
+            `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}`,
             fileData,
             {
               headers: {
@@ -276,6 +313,8 @@ export default {
             this.logMessage = response.data.message;
             this.sbcolor = "success";
             this.people[this.editPersonIndex] = response.data.person;
+            user.people = this.people;
+            this.$store.dispatch("setUser", user);
             this.editPersonOverlay = false;
             this.formData.name = "";
             this.formData.degree = "";
@@ -291,10 +330,10 @@ export default {
       } else {
         axios
           .put(
-            `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}`,
+            `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}`,
+            {},
             {
               headers: {
-                "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${user.token}`
               }
             }
@@ -305,6 +344,8 @@ export default {
             this.logMessage = response.data.message;
             this.sbcolor = "success";
             this.people[this.editPersonIndex] = response.data.person;
+            user.people = this.people;
+            this.$store.dispatch("setUser", user);
             this.editPersonOverlay = false;
             this.formData.name = "";
             this.formData.degree = "";
@@ -347,6 +388,8 @@ export default {
           this.logMessage = response.data.message;
           this.sbcolor = "success";
           this.people.splice(this.deletePersonIndex);
+          user.people = this.people;
+          this.$store.dispatch("setUser", user);
           this.deletePersonIndex = "";
           this.deletePersonOverlay = false;
           this.$nuxt.$loading.finish();
@@ -356,6 +399,44 @@ export default {
           this.logMessage = error.response.data.message;
           this.sbcolor = "error";
           this.$nuxt.$loading.finish();
+        });
+    },
+    resetCounter(index) {
+      this.$nuxt.$loading.start();
+      let user = this.$store.getters.getUser;
+      this.formData.name = this.people[index].name;
+      this.formData.degree = this.people[index].degree;
+      this.formData.doCount = this.people[index].doCount;
+      this.formData.doNotify = this.people[index].doNotify;
+      axios
+        .put(
+          `${process.env.baseUrl}/people/${this.people[index]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}&counter=0`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`
+            }
+          }
+        )
+        .then(response => {
+          this.$nuxt.$loading.finish();
+          this.snackbar = true;
+          this.logMessage = "Couter resetted";
+          this.sbcolor = "success";
+          this.people[index] = response.data.person;
+          user.people = this.people;
+          this.$store.dispatch("setUser", user);
+          this.editPersonOverlay = false;
+          this.formData.name = "";
+          this.formData.degree = "";
+          this.formData.doCount = false;
+          this.formData.doNotify = true;
+        })
+        .catch(error => {
+          this.$nuxt.$loading.finish();
+          this.snackbar = true;
+          this.logMessage = error.response.data.message;
+          this.sbcolor = "error";
         });
     }
   },

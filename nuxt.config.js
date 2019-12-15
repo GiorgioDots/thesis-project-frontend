@@ -22,7 +22,7 @@ export default {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#ad03fc', height: '4px' },
+  loading: { color: '#2bd5ff', height: '4px' },
   /*
   ** Global CSS
   */
@@ -32,6 +32,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~plugins/date-filter.js'
   ],
   /*
   ** Nuxt.js dev-modules

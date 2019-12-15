@@ -19,7 +19,7 @@
         <v-list-item-content>Settings</v-list-item-content>
       </v-list-item>
       <v-list-item link to="/history" @click="$emit('changePage')">
-        <v-list-item-content>History</v-list-item-content>
+        <v-list-item-content>Events History</v-list-item-content>
       </v-list-item>
       <v-list-item link to="/" @click="onLogout">
         <v-list-item-content>Logout</v-list-item-content>
@@ -37,6 +37,7 @@ export default {
       this.$emit("changePage");
       localStorage.removeItem("user");
       this.$store.dispatch("logoutUser");
+      this.$emit("loggedOut");
       this.$nuxt.$loading.finish();
     }
   }

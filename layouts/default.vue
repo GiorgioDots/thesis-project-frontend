@@ -1,7 +1,7 @@
 <template>
   <v-app id="inspire">
     <v-navigation-drawer v-model="drawerState" app>
-      <appDrawer :isAuth="isAuth" @changePage="drawerState = false"></appDrawer>
+      <appDrawer @loggedOut="onLoggedOut" :isAuth="isAuth" @changePage="drawerState = false"></appDrawer>
     </v-navigation-drawer>
     <v-app-bar app color="teal darken-1" dark>
       <v-btn icon @click.stop="drawerState = !drawerState">
@@ -15,8 +15,18 @@
         <v-icon>mdi-github-circle</v-icon>
       </v-btn>
     </v-app-bar>
-    <v-content>
+    <v-content
+      style=" background-image: url('https://wallpaperbro.com/img/307361.jpg');
+              height: 100%;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-size: cover;"
+    >
       <nuxt />
+      <v-snackbar v-model="snackbar" :color="sbcolor" right :timeout="3000" top>
+        {{logMessage}}
+        <v-btn dark text @click="snackbar = false">Close</v-btn>
+      </v-snackbar>
     </v-content>
     <v-footer color="teal darken-1" app>
       <span class="white--text">&copy; 2019</span>
@@ -47,6 +57,13 @@ export default {
   computed: {
     isAuth() {
       return this.$store.getters.getUser;
+    }
+  },
+  methods: {
+    onLoggedOut() {
+      this.snackbar = true;
+      this.logMessage = "Logged out";
+      this.sbcolor = "success";
     }
   }
 };
