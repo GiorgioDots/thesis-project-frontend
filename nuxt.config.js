@@ -14,13 +14,15 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Raleway&display=swap' },
+      { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css' },
+      { rel: 'stylesheet', href: 'https://use.fontawesome.com/releases/v5.0.13/css/all.css' },
       { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css' }
     ]
   },
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#67c981', height: '3px' },
+  loading: { color: '#ad03fc', height: '4px' },
   /*
   ** Global CSS
   */
@@ -35,11 +37,13 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
+    '@nuxtjs/vuetify',
   ],
   /*
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/vuetify',
     // Doc: https://bootstrap-vue.js.org
     'bootstrap-vue/nuxt',
     // Doc: https://axios.nuxtjs.org/usage
@@ -62,8 +66,7 @@ export default {
     }
   },
   env: {
-    baseUrl: "http://localhost:8080",
-    fbAPIKey: process.env.FB_API_KEY || 'AIzaSyD2NgpfLpzXqODxj2uDIh72fRC8KqUgmJI'
+    baseUrl: "http://localhost:8080"
   },
   transition: {
     name: '',
@@ -71,5 +74,8 @@ export default {
     enterActiveClass: 'animated fadeIn',
     leaveActiveClass: 'animated fadeOut',
     duration: 100
+  },
+  router: {
+    mode: 'hash'
   }
 }

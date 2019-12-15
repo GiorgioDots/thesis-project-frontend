@@ -1,23 +1,52 @@
 <template>
-  <div>
-    <Header></Header>
-    <nuxt />
-  </div>
+  <v-app id="inspire">
+    <v-navigation-drawer v-model="drawerState" app>
+      <appDrawer :isAuth="isAuth" @changePage="drawerState = false"></appDrawer>
+    </v-navigation-drawer>
+    <v-app-bar app color="teal darken-1" dark>
+      <v-btn icon @click.stop="drawerState = !drawerState">
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
+      <v-toolbar-items>
+        <v-btn text to="/">RaspiFace</v-btn>
+      </v-toolbar-items>
+      <v-spacer></v-spacer>
+      <v-btn icon href="https://github.com/GiorgioDots" target="_blank">
+        <v-icon>mdi-github-circle</v-icon>
+      </v-btn>
+    </v-app-bar>
+    <v-content>
+      <nuxt />
+    </v-content>
+    <v-footer color="teal darken-1" app>
+      <span class="white--text">&copy; 2019</span>
+    </v-footer>
+  </v-app>
 </template>
 
 <script>
-import Header from "@/components/Header.vue";
+import Drawer from "@/components/navigation/Drawer.vue";
 export default {
   components: {
-    Header
+    appDrawer: Drawer
   },
-  created() {
-    this.initUser();
+  data() {
+    return {
+      logMessage: "",
+      snackbar: false,
+      sbcolor: "",
+      drawerState: false
+    };
   },
-  methods: {
-    initUser() {
-      this.$store.dispatch("setToken", localStorage.getItem("token"));
-      this.$store.dispatch("setUserId", localStorage.getItem("userId"));
+  beforeCreate() {
+    this.$store.dispatch(
+      "setUser",
+      JSON.parse(localStorage.getItem("RaspiFaceUser"))
+    );
+  },
+  computed: {
+    isAuth() {
+      return this.$store.getters.getUser;
     }
   }
 };
@@ -31,5 +60,9 @@ html {
   -webkit-text-size-adjust: 100%;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
+}
+button:active {
+  outline: none;
+  border: none;
 }
 </style>
