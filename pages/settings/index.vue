@@ -5,40 +5,16 @@
         <v-col cols="12" sm="8" md="4">
           <v-card class="elevation-12">
             <v-toolbar color="teal lighten-1" dark flat>
-              <v-toolbar-title>Sign Up</v-toolbar-title>
+              <v-toolbar-title>Account settings</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <v-form ref="form" v-model="valid" :lazy-validation="lazy">
-                <v-text-field
-                  v-model="formData.email"
-                  :rules="emailRules"
-                  required
-                  label="Email"
-                  name="email"
-                  type="email"
-                />
-                <v-text-field
-                  v-model="formData.password"
-                  :rules="passwordRules"
-                  required
-                  label="Password"
-                  name="password"
-                  type="password"
-                />
                 <v-text-field
                   v-model="formData.name"
                   :rules="nameRules"
                   label="Name"
                   required
                   name="name"
-                  type="text"
-                />
-                <v-text-field
-                  v-model="formData.raspiId"
-                  :rules="raspiIdRules"
-                  label="Raspi Id"
-                  required
-                  name="raspiId"
                   type="text"
                 />
                 <v-text-field
@@ -49,6 +25,14 @@
                   name="telegramId"
                   type="text"
                 />
+                <v-text-field
+                  v-model="formData.raspiId"
+                  :rules="raspiIdRules"
+                  label="Raspi ID"
+                  required
+                  name="raspiId"
+                  type="text"
+                />
               </v-form>
             </v-card-text>
             <v-card-actions>
@@ -57,9 +41,8 @@
                 :disabled="!valid"
                 color="teal lighten-2"
                 :dark="valid"
-                @click="onSignUp()"
-              >Sign Up</v-btn>
-              <v-btn color="teal lighten-2" text to="/login">Or Login</v-btn>
+                @click="saveChanges()"
+              >Save changes</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -78,36 +61,46 @@ export default {
     return {
       valid: true,
       formData: {
-        name: "",
-        email: "",
-        password: "",
+        telegramId: "",
         raspiId: "",
-        telegramId: ""
+        name: ""
       },
+      lazy: false,
+      telegramIdRules: [v => !!v || "Telegram ID is required"],
+      nameRules: [v => !!v || "Name is required"],
+      raspiIdRules: [v => !!v || "Raspi ID is required"],
       snackbar: false,
       sbcolor: "",
-      logMessage: "",
-      lazy: false,
-      nameRules: [v => !!v || "Name is required"],
-      passwordRules: [v => !!v || "Password is required"],
-      raspiIdRules: [v => !!v || "Raspi ID is required"],
-      telegramIdRules: [v => !!v || "Telegram ID is required"],
-      emailRules: [
-        v => !!v || "E-mail is required",
-        v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-      ]
+      logMessage: ""
     };
   },
+  created() {
+    let user = this.$store.getters.getUser;
+    this.formData.telegramId = user.telegramId;
+    this.formData.name = user.name;
+    this.formData.raspiId = user.raspiId;
+  },
   methods: {
-    onSignUp() {
+    saveChanges() {
       this.$nuxt.$loading.start();
+      let user = this.$store.getters.getUser;
       axios
-        .put(`${process.env.baseUrl}/auth/signup`, { ...this.formData })
+        .put(
+          `${process.env.baseUrl}/user/${user._id}`,
+          {
+            ...this.formData
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`
+            }
+          }
+        )
         .then(response => {
-          const user = response.data.user;
-          user.token = response.data.token;
+          user.name = this.formData.name;
+          user.telegramId = this.formData.telegramId;
+          user.raspiId = this.formData.raspiId;
           this.$store.dispatch("setUser", user);
-          this.$router.push("/dashboard");
           this.snackbar = true;
           this.logMessage = response.data.message;
           this.sbcolor = "success";
@@ -117,7 +110,6 @@ export default {
           this.snackbar = true;
           this.logMessage = error.response.data.message;
           this.sbcolor = "error";
-          this.$nuxt.$loading.finish();
         });
     }
   }

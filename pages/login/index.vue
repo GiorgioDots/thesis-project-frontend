@@ -34,17 +34,17 @@
                 color="teal lighten-2"
                 :dark="valid"
                 @click="onLogin()"
-              >Sign Up</v-btn>
+              >Login</v-btn>
               <v-btn color="teal lighten-2" text to="/signup">Or Signup</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
-      <v-snackbar v-model="snackbar" :color="sbcolor" right :timeout="sbtimeout" top>
-        {{logMessage}}
-        <v-btn dark text @click="snackbar = false">Close</v-btn>
-      </v-snackbar>
     </v-container>
+    <v-snackbar v-model="snackbar" :color="sbcolor" right :timeout="sbtimeout" top>
+      {{logMessage}}
+      <v-btn dark text @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
   </div>
 </template>
 <script>
@@ -75,11 +75,12 @@ export default {
       axios
         .post(`${process.env.baseUrl}/auth/login`, { ...this.formData })
         .then(response => {
-          this.$nuxt.$loading.finish();
-          const user = response.data.user;
+          let user = response.data.user;
           user.token = response.data.token;
           this.$store.dispatch("setUser", user);
-          this.$router.push("/");
+          this.$router.push("/dashboard");
+          this.$nuxt.$loading.finish();
+          this.$emit("onLogin");
         })
         .catch(error => {
           this.$nuxt.$loading.finish();
