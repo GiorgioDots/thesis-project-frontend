@@ -78,10 +78,41 @@ export default {
           .then(response => {
             let user = response.data.user;
             user.token = response.data.token;
-            this.$store.dispatch("setUser", user);
-            this.$router.push("/dashboard");
-            this.$nuxt.$loading.finish();
-            this.$emit("onLogin");
+            axios
+              .get(`${process.env.baseUrl}/people`, {
+                params: {
+                  userId: user._id
+                },
+                headers: {
+                  "Content-type": "application/json",
+                  Authorization: `Bearer ${user.token}`
+                }
+              })
+              .then(people => {
+                user.people = people.data.people;
+                axios
+                  .get(`${process.env.baseUrl}/events/user/${user._id}`, {
+                    headers: {
+                      "Content-type": "application/json",
+                      Authorization: `Bearer ${user.token}`
+                    }
+                  })
+                  .then(events => {
+                    events.data.events.sort(function(a, b) {
+                      return new Date(b.date) - new Date(a.date);
+                    });
+                    user.events = events.data.events;
+                    this.$store.dispatch("setUser", user);
+                    this.$router.push("/dashboard");
+                    this.$nuxt.$loading.finish();
+                  })
+                  .catch(error => {
+                    throw error;
+                  });
+              })
+              .catch(error => {
+                throw error;
+              });
           })
           .catch(error => {
             this.$nuxt.$loading.finish();
