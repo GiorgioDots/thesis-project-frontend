@@ -29,7 +29,7 @@
         <v-container fluid>
           <v-row align="center" justify="center">
             <v-col lg="12" md="12" sm="12">
-              <v-card class="elevation-12" max-width="300">
+              <v-card class="elevation-12" min-width="200" max-width="300">
                 <v-toolbar color="teal lighten-1" dark flat>
                   <v-toolbar-title>Event Details</v-toolbar-title>
                   <v-spacer></v-spacer>
@@ -51,6 +51,12 @@
                   </ul>
                   <v-img :src="openedEvent.imageUrl" max-height="300px"></v-img>
                 </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                    <v-btn icon :href="openedEvent.imageUrl" class="mb-0">
+                      <v-icon>fas fa-download</v-icon>
+                  </v-btn>
+                </v-card-actions>
               </v-card>
             </v-col>
           </v-row>
