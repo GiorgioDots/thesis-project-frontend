@@ -100,25 +100,27 @@ export default {
   },
   methods: {
     onSignUp() {
-      this.$nuxt.$loading.start();
-      axios
-        .put(`${process.env.baseUrl}/auth/signup`, { ...this.formData })
-        .then(response => {
-          const user = response.data.user;
-          user.token = response.data.token;
-          this.$store.dispatch("setUser", user);
-          this.$router.push("/dashboard");
-          this.snackbar = true;
-          this.logMessage = response.data.message;
-          this.sbcolor = "success";
-          this.$nuxt.$loading.finish();
-        })
-        .catch(error => {
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-          this.$nuxt.$loading.finish();
-        });
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        axios
+          .put(`${process.env.baseUrl}/auth/signup`, { ...this.formData })
+          .then(response => {
+            const user = response.data.user;
+            user.token = response.data.token;
+            this.$store.dispatch("setUser", user);
+            this.$router.push("/dashboard");
+            this.snackbar = true;
+            this.logMessage = response.data.message;
+            this.sbcolor = "success";
+            this.$nuxt.$loading.finish();
+          })
+          .catch(error => {
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+            this.$nuxt.$loading.finish();
+          });
+      });
     }
   }
 };

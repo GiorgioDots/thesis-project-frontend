@@ -82,35 +82,37 @@ export default {
   },
   methods: {
     saveChanges() {
-      this.$nuxt.$loading.start();
-      let user = this.$store.getters.getUser;
-      axios
-        .put(
-          `${process.env.baseUrl}/user/${user._id}`,
-          {
-            ...this.formData
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        let user = this.$store.getters.getUser;
+        axios
+          .put(
+            `${process.env.baseUrl}/user/${user._id}`,
+            {
+              ...this.formData
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${user.token}`
+              }
             }
-          }
-        )
-        .then(response => {
-          user.name = this.formData.name;
-          user.telegramId = this.formData.telegramId;
-          user.raspiId = this.formData.raspiId;
-          this.$store.dispatch("setUser", user);
-          this.snackbar = true;
-          this.logMessage = response.data.message;
-          this.sbcolor = "success";
-          this.$nuxt.$loading.finish();
-        })
-        .catch(error => {
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-        });
+          )
+          .then(response => {
+            user.name = this.formData.name;
+            user.telegramId = this.formData.telegramId;
+            user.raspiId = this.formData.raspiId;
+            this.$store.dispatch("setUser", user);
+            this.snackbar = true;
+            this.logMessage = response.data.message;
+            this.sbcolor = "success";
+            this.$nuxt.$loading.finish();
+          })
+          .catch(error => {
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+          });
+      });
     }
   }
 };

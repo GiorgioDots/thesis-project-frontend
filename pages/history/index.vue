@@ -3,7 +3,7 @@
     <v-btn class="mb-10" fab dark bottom left fixed color="pink darken-1" @click="deleteEvents()">
       <v-icon>fas fa-trash-alt</v-icon>
     </v-btn>
-    <v-btn class="mb-10" fab dark bottom right fixed color="pink darken-1" @click="getEvents">
+    <v-btn class="mb-10" fab dark bottom right fixed color="pink darken-1" @click="getEvents(false)">
       <v-icon>fas fa-sync</v-icon>
     </v-btn>
     <v-container fluid>
@@ -16,7 +16,7 @@
                 <v-btn class="mx-2" small outlined @click="goToEventDetails(event)">
                   <v-icon small>mdi-open-in-new</v-icon>
                 </v-btn>
-                <v-btn color="error" small outlined @click="deleteEvent(index)">
+                <v-btn color="error" :disabled="!valid" small outlined @click="deleteEvent(index)">
                   <v-icon small>fas fa-trash-alt</v-icon>
                 </v-btn>
               </v-row>
@@ -74,37 +74,43 @@ export default {
       sbcolor: "",
       logMessage: "",
       openedEvent: {},
-      eventOverlay: false
+      eventOverlay: false,
+      valid: true
     };
   },
   methods: {
     deleteEvent(index) {
-      this.$nuxt.$loading.start();
-      let user = this.$store.getters.getUser;
-      axios
-        .delete(`${process.env.baseUrl}/events/${this.events[index]._id}`, {
-          headers: {
-            Authorization: `Bearer ${user.token}`
-          }
-        })
-        .then(result => {
-          this.snackbar = true;
-          this.sbcolor = "success";
-          this.logMessage = result.data.message;
-          this.events.splice(index, 1);
-          user.events = this.events;
-          this.$store.dispatch("setUser", user);
-          this.$nuxt.$loading.finish();
-        })
-        .catch(error => {
-          console.log(error);
-          // this.snackbar = true;
-          // this.logMessage = error.response.data.message;
-          // this.sbcolor = "error";
-          this.$nuxt.$loading.finish();
-        });
+      this.valid = false;
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        let user = this.$store.getters.getUser;
+        axios
+          .delete(`${process.env.baseUrl}/events/${this.events[index]._id}`, {
+            headers: {
+              Authorization: `Bearer ${user.token}`
+            }
+          })
+          .then(result => {
+            this.snackbar = true;
+            this.sbcolor = "success";
+            this.logMessage = result.data.message;
+            this.events.splice(index, 1);
+            user.events = this.events;
+            this.$store.dispatch("setUser", user);
+            this.$nuxt.$loading.finish();
+            this.valid = true;
+          })
+          .catch(error => {
+            console.log(error);
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+            this.$nuxt.$loading.finish();
+            this.valid = true;
+          });
+      });
     },
-    getEvents() {
+    getEvents(isFirst) {
       const user = this.$store.getters.getUser;
       axios
         .get(`${process.env.baseUrl}/events/user/${user._id}`, {
@@ -121,33 +127,40 @@ export default {
           user.events = response.data.events;
           this.events = user.events;
           this.$store.dispatch("setUser", user);
+          if(!isFirst){
+            this.snackbar = true;
+            this.sbcolor = "success";
+            this.logMessage = "Events refreshed!";
+          }
         });
     },
     deleteEvents() {
-      this.$nuxt.$loading.start();
-      let user = this.$store.getters.getUser;
-      axios
-        .delete(`${process.env.baseUrl}/events/user/${user._id}`, {
-          headers: {
-            Authorization: `Bearer ${user.token}`
-          }
-        })
-        .then(result => {
-          this.snackbar = true;
-          this.sbcolor = "success";
-          this.logMessage = result.data.message;
-          this.events = result.data.events;
-          user.events = this.events;
-          this.$store.dispatch("setUser", user);
-          this.$nuxt.$loading.finish();
-        })
-        .catch(error => {
-          console.log(error);
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-          this.$nuxt.$loading.finish();
-        });
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        let user = this.$store.getters.getUser;
+        axios
+          .delete(`${process.env.baseUrl}/events/user/${user._id}`, {
+            headers: {
+              Authorization: `Bearer ${user.token}`
+            }
+          })
+          .then(result => {
+            this.snackbar = true;
+            this.sbcolor = "success";
+            this.logMessage = result.data.message;
+            this.events = result.data.events;
+            user.events = this.events;
+            this.$store.dispatch("setUser", user);
+            this.$nuxt.$loading.finish();
+          })
+          .catch(error => {
+            console.log(error);
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+            this.$nuxt.$loading.finish();
+          });
+      });
     },
     goToEventDetails(event) {
       this.openedEvent = event;
@@ -159,7 +172,7 @@ export default {
     }
   },
   created() {
-    this.getEvents();
+    this.getEvents(true);
   }
 };
 </script>

@@ -71,23 +71,25 @@ export default {
   },
   methods: {
     onLogin() {
-      this.$nuxt.$loading.start();
-      axios
-        .post(`${process.env.baseUrl}/auth/login`, { ...this.formData })
-        .then(response => {
-          let user = response.data.user;
-          user.token = response.data.token;
-          this.$store.dispatch("setUser", user);
-          this.$router.push("/dashboard");
-          this.$nuxt.$loading.finish();
-          this.$emit("onLogin");
-        })
-        .catch(error => {
-          this.$nuxt.$loading.finish();
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-        });
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        axios
+          .post(`${process.env.baseUrl}/auth/login`, { ...this.formData })
+          .then(response => {
+            let user = response.data.user;
+            user.token = response.data.token;
+            this.$store.dispatch("setUser", user);
+            this.$router.push("/dashboard");
+            this.$nuxt.$loading.finish();
+            this.$emit("onLogin");
+          })
+          .catch(error => {
+            this.$nuxt.$loading.finish();
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+          });
+      });
     }
   }
 };

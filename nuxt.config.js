@@ -22,7 +22,7 @@ export default {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#2bd5ff', height: '4px' },
+  loading: {continuous: true, color: '#2bd5ff', height: '4px', duration: 1000},
   /*
   ** Global CSS
   */
@@ -68,7 +68,7 @@ export default {
   env: {
     baseUrl: "https://raspiface-backend.herokuapp.com"
   },
-  transition: {
+  pageTransition: {
     name: '',
     mode: 'out-in',
     enterActiveClass: 'animated fadeIn',
