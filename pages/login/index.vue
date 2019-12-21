@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container class="fill-height" fluid>
+    <v-container fluid>
       <v-row align="center" justify="center">
         <v-col cols="12" sm="8" md="4">
           <v-card class="elevation-12">
@@ -71,23 +71,56 @@ export default {
   },
   methods: {
     onLogin() {
-      this.$nuxt.$loading.start();
-      axios
-        .post(`${process.env.baseUrl}/auth/login`, { ...this.formData })
-        .then(response => {
-          let user = response.data.user;
-          user.token = response.data.token;
-          this.$store.dispatch("setUser", user);
-          this.$router.push("/dashboard");
-          this.$nuxt.$loading.finish();
-          this.$emit("onLogin");
-        })
-        .catch(error => {
-          this.$nuxt.$loading.finish();
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-        });
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        axios
+          .post(`${process.env.baseUrl}/auth/login`, { ...this.formData })
+          .then(response => {
+            let user = response.data.user;
+            user.token = response.data.token;
+            axios
+              .get(`${process.env.baseUrl}/people`, {
+                params: {
+                  userId: user._id
+                },
+                headers: {
+                  "Content-type": "application/json",
+                  Authorization: `Bearer ${user.token}`
+                }
+              })
+              .then(people => {
+                user.people = people.data.people;
+                axios
+                  .get(`${process.env.baseUrl}/events/user/${user._id}`, {
+                    headers: {
+                      "Content-type": "application/json",
+                      Authorization: `Bearer ${user.token}`
+                    }
+                  })
+                  .then(events => {
+                    events.data.events.sort(function(a, b) {
+                      return new Date(b.date) - new Date(a.date);
+                    });
+                    user.events = events.data.events;
+                    this.$store.dispatch("setUser", user);
+                    this.$router.push("/dashboard");
+                    this.$nuxt.$loading.finish();
+                  })
+                  .catch(error => {
+                    throw error;
+                  });
+              })
+              .catch(error => {
+                throw error;
+              });
+          })
+          .catch(error => {
+            this.$nuxt.$loading.finish();
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+          });
+      });
     }
   }
 };

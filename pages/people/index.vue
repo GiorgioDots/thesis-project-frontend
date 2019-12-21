@@ -12,7 +12,7 @@
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
-    <v-btn class="mb-10" fab dark bottom right fixed color="pink darken-1" @click="getPeople">
+    <v-btn class="mb-10" fab dark bottom right fixed color="pink darken-1" @click="getPeople(false)">
       <v-icon>fas fa-sync</v-icon>
     </v-btn>
     <v-container fluid>
@@ -177,7 +177,7 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn color="error" dark @click="deletePerson()">Ok, delete!</v-btn>
+                  <v-btn :disabled="!valid" color="error" dark @click="deletePerson()">Ok, delete!</v-btn>
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -221,46 +221,52 @@ export default {
   },
   methods: {
     addPerson() {
-      this.$nuxt.$loading.start();
-      if (!this.image) {
-        this.snackbar = true;
-        this.logMessage = "Please select a photo";
-        this.sbcolor = "error";
-        return;
-      }
-      let user = this.$store.getters.getUser;
-      let fileData = new FormData();
-      fileData.append("image", this.image);
-      axios
-        .post(
-          `${process.env.baseUrl}/people?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doCount=${this.formData.doCount}&doNotify=${this.formData.doNotify}`,
-          fileData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${user.token}`
-            }
-          }
-        )
-        .then(response => {
-          this.snackbar = true;
-          this.logMessage = response.data.message;
-          this.sbcolor = "success";
-          this.people.push(response.data.person);
-          user.people = this.people;
-          this.$store.dispatch("setUser", user);
-          this.addPersonOverlay = false;
-          this.formData.name = "";
-          this.formData.degree = "";
-          this.image = null;
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        if(this.image){
+          this.valid = false;
+          let user = this.$store.getters.getUser;
+          let fileData = new FormData();
+          fileData.append("image", this.image);
+          axios
+            .post(
+              `${process.env.baseUrl}/people?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doCount=${this.formData.doCount}&doNotify=${this.formData.doNotify}`,
+              fileData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  Authorization: `Bearer ${user.token}`
+                }
+              }
+            )
+            .then(response => {
+              this.snackbar = true;
+              this.logMessage = response.data.message;
+              this.sbcolor = "success";
+              this.people.push(response.data.person);
+              user.people = this.people;
+              this.$store.dispatch("setUser", user);
+              this.addPersonOverlay = false;
+              this.formData.name = "";
+              this.formData.degree = "";
+              this.image = null;
+              this.$nuxt.$loading.finish();
+              this.valid = true;
+            })
+            .catch(error => {
+              this.$nuxt.$loading.finish();
+              this.snackbar = true;
+              this.logMessage = error.response.data.message;
+              this.sbcolor = "error";
+              this.valid = true;
+            });
+        }else{
           this.$nuxt.$loading.finish();
-        })
-        .catch(error => {
-          this.$nuxt.$loading.finish();
           this.snackbar = true;
-          this.logMessage = error.response.data.message;
+          this.logMessage = 'Please select a photo';
           this.sbcolor = "error";
-        });
+        }
+      });
     },
     onEditPerson(index) {
       this.editPersonOverlay = true;
@@ -279,74 +285,81 @@ export default {
       this.editPersonIndex = "";
     },
     editPerson(index) {
-      this.$nuxt.$loading.start();
-      let user = this.$store.getters.getUser;
-      if (this.image) {
-        let fileData = new FormData();
-        fileData.append("image", this.image);
-        axios
-          .put(
-            `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}`,
-            fileData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${user.token}`
+      this.valid = false;
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        let user = this.$store.getters.getUser;
+        if (this.image) {
+          let fileData = new FormData();
+          fileData.append("image", this.image);
+          axios
+            .put(
+              `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}`,
+              fileData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                  Authorization: `Bearer ${user.token}`
+                }
               }
-            }
-          )
-          .then(response => {
-            this.$nuxt.$loading.finish();
-            this.snackbar = true;
-            this.logMessage = response.data.message;
-            this.sbcolor = "success";
-            this.people[this.editPersonIndex] = response.data.person;
-            user.people = this.people;
-            this.$store.dispatch("setUser", user);
-            this.editPersonOverlay = false;
-            this.formData.name = "";
-            this.formData.degree = "";
-            this.image = null;
-            this.editPersonIndex = "";
-          })
-          .catch(error => {
-            this.$nuxt.$loading.finish();
-            this.snackbar = true;
-            this.logMessage = error.response.data.message;
-            this.sbcolor = "error";
-          });
-      } else {
-        axios
-          .put(
-            `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${user.token}`
+            )
+            .then(response => {
+              this.$nuxt.$loading.finish();
+              this.snackbar = true;
+              this.logMessage = response.data.message;
+              this.sbcolor = "success";
+              this.people[this.editPersonIndex] = response.data.person;
+              user.people = this.people;
+              this.$store.dispatch("setUser", user);
+              this.editPersonOverlay = false;
+              this.formData.name = "";
+              this.formData.degree = "";
+              this.image = null;
+              this.editPersonIndex = "";
+              this.valid = true;
+            })
+            .catch(error => {
+              this.$nuxt.$loading.finish();
+              this.snackbar = true;
+              this.logMessage = error.response.data.message;
+              this.sbcolor = "error";
+              this.valid = true;
+            });
+        } else {
+          axios
+            .put(
+              `${process.env.baseUrl}/people/${this.people[this.editPersonIndex]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}`,
+              {},
+              {
+                headers: {
+                  Authorization: `Bearer ${user.token}`
+                }
               }
-            }
-          )
-          .then(response => {
-            this.$nuxt.$loading.finish();
-            this.snackbar = true;
-            this.logMessage = response.data.message;
-            this.sbcolor = "success";
-            this.people[this.editPersonIndex] = response.data.person;
-            user.people = this.people;
-            this.$store.dispatch("setUser", user);
-            this.editPersonOverlay = false;
-            this.formData.name = "";
-            this.formData.degree = "";
-            this.image = null;
-            this.editPersonIndex = "";
-          })
-          .catch(error => {
-            this.$nuxt.$loading.finish();
-            this.snackbar = true;
-            this.logMessage = error.response.data.message;
-            this.sbcolor = "error";
-          });
-      }
+            )
+            .then(response => {
+              this.$nuxt.$loading.finish();
+              this.snackbar = true;
+              this.logMessage = response.data.message;
+              this.sbcolor = "success";
+              this.people[this.editPersonIndex] = response.data.person;
+              user.people = this.people;
+              this.$store.dispatch("setUser", user);
+              this.editPersonOverlay = false;
+              this.formData.name = "";
+              this.formData.degree = "";
+              this.image = null;
+              this.editPersonIndex = "";
+              this.valid = true;
+            })
+            .catch(error => {
+              this.$nuxt.$loading.finish();
+              this.snackbar = true;
+              this.logMessage = error.response.data.message;
+              this.sbcolor = "error";
+              this.valid = true;
+            });
+        }
+      });
     },
     onDeletePerson(index) {
       this.deletePersonIndex = index;
@@ -357,106 +370,120 @@ export default {
       this.deletePersonOverlay = false;
     },
     deletePerson() {
+      this.valid = false;
       let user = this.$store.getters.getUser;
-      this.$nuxt.$loading.start();
-      axios
-        .delete(
-          `${process.env.baseUrl}/people/${this.people[this.deletePersonIndex]._id}`,
-          {
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        axios
+          .delete(
+            `${process.env.baseUrl}/people/${this.people[this.deletePersonIndex]._id}`,
+            {
+              params: {
+                userId: user._id
+              },
+              headers: {
+                Authorization: `Bearer ${user.token}`
+              }
+            }
+          )
+          .then(response => {
+            this.snackbar = true;
+            this.logMessage = response.data.message;
+            this.sbcolor = "success";
+            this.people.splice(this.deletePersonIndex);
+            user.people = this.people;
+            this.$store.dispatch("setUser", user);
+            this.deletePersonIndex = "";
+            this.deletePersonOverlay = false;
+            this.$nuxt.$loading.finish();
+            this.valid = true;
+          })
+          .catch(error => {
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+            this.$nuxt.$loading.finish();
+            this.valid = true;
+          });
+      });
+    },
+    resetCounter(index) {
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        let user = this.$store.getters.getUser;
+        this.formData.name = this.people[index].name;
+        this.formData.degree = this.people[index].degree;
+        this.formData.doCount = this.people[index].doCount;
+        this.formData.doNotify = this.people[index].doNotify;
+        axios
+          .put(
+            `${process.env.baseUrl}/people/${this.people[index]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}&counter=0`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${user.token}`
+              }
+            }
+          )
+          .then(response => {
+            this.$nuxt.$loading.finish();
+            this.snackbar = true;
+            this.logMessage = "Couter resetted";
+            this.sbcolor = "success";
+            this.people[index] = response.data.person;
+            user.people = this.people;
+            this.$store.dispatch("setUser", user);
+            this.editPersonOverlay = false;
+            this.formData.name = "";
+            this.formData.degree = "";
+            this.formData.doCount = false;
+            this.formData.doNotify = true;
+          })
+          .catch(error => {
+            this.$nuxt.$loading.finish();
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+          });
+      });
+    },
+    getPeople(isFirst) {
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        const user = this.$store.getters.getUser;
+        axios
+          .get(`${process.env.baseUrl}/people`, {
             params: {
               userId: user._id
             },
             headers: {
+              "Content-type": "application/json",
               Authorization: `Bearer ${user.token}`
             }
-          }
-        )
-        .then(response => {
-          this.snackbar = true;
-          this.logMessage = response.data.message;
-          this.sbcolor = "success";
-          this.people.splice(this.deletePersonIndex);
-          user.people = this.people;
-          this.$store.dispatch("setUser", user);
-          this.deletePersonIndex = "";
-          this.deletePersonOverlay = false;
-          this.$nuxt.$loading.finish();
-        })
-        .catch(error => {
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-          this.$nuxt.$loading.finish();
-        });
-    },
-    resetCounter(index) {
-      this.$nuxt.$loading.start();
-      let user = this.$store.getters.getUser;
-      this.formData.name = this.people[index].name;
-      this.formData.degree = this.people[index].degree;
-      this.formData.doCount = this.people[index].doCount;
-      this.formData.doNotify = this.people[index].doNotify;
-      axios
-        .put(
-          `${process.env.baseUrl}/people/${this.people[index]._id}?name=${this.formData.name}&degree=${this.formData.degree}&userId=${user._id}&doNotify=${this.formData.doNotify}&doCount=${this.formData.doCount}&counter=0`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`
+          })
+          .then(response => {
+            let user = this.$store.getters.getUser;
+            user.people = response.data.people;
+            if(!isFirst){
+              this.snackbar = true;
+              this.logMessage = "People refreshed!";
+              this.sbcolor = "success";  
             }
-          }
-        )
-        .then(response => {
-          this.$nuxt.$loading.finish();
-          this.snackbar = true;
-          this.logMessage = "Couter resetted";
-          this.sbcolor = "success";
-          this.people[index] = response.data.person;
-          user.people = this.people;
-          this.$store.dispatch("setUser", user);
-          this.editPersonOverlay = false;
-          this.formData.name = "";
-          this.formData.degree = "";
-          this.formData.doCount = false;
-          this.formData.doNotify = true;
-        })
-        .catch(error => {
-          this.$nuxt.$loading.finish();
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-        });
-    },
-    getPeople() {
-      this.$nuxt.$loading.start();
-      const user = this.$store.getters.getUser;
-      axios
-        .get(`${process.env.baseUrl}/people`, {
-          params: {
-            userId: user._id
-          },
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${user.token}`
-          }
-        })
-        .then(response => {
-          let user = this.$store.getters.getUser;
-          user.people = response.data.people;
-          this.people = user.people;
-          this.$store.dispatch("setUser", user);
-          this.$nuxt.$loading.finish();
-        })
-        .catch(error => {
-          this.$nuxt.$loading.finish();
-          this.snackbar = true;
-          this.logMessage = error.response.data.message;
-          this.sbcolor = "error";
-        });
+            this.people = user.people;
+            this.$store.dispatch("setUser", user);
+            this.$nuxt.$loading.finish();
+          })
+          .catch(error => {
+            this.$nuxt.$loading.finish();
+            this.snackbar = true;
+            this.logMessage = error.response.data.message;
+            this.sbcolor = "error";
+          });
+      });
     }
   },
   created() {
-    this.getPeople();
+    this.getPeople(true);
   }
 };
 </script>

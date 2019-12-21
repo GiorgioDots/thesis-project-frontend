@@ -33,12 +33,14 @@ export default {
   props: ["isAuth"],
   methods: {
     onLogout() {
-      this.$nuxt.$loading.start();
-      this.$emit("changePage");
-      localStorage.removeItem("user");
-      this.$store.dispatch("logoutUser");
-      this.$emit("loggedOut");
-      this.$nuxt.$loading.finish();
+      this.$nextTick(() => {
+        this.$nuxt.$loading.start();
+        this.$emit("changePage");
+        localStorage.removeItem("user");
+        this.$store.dispatch("logoutUser");
+        this.$emit("loggedOut");
+        this.$nuxt.$loading.finish();
+      });
     }
   }
 };
