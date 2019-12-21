@@ -5,26 +5,24 @@
       fab
       dark
       bottom
-      right
+      left
       fixed
       color="pink darken-1"
       @click="addPersonOverlay = true;"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
+    <v-btn class="mb-10" fab dark bottom right fixed color="pink darken-1" @click="getPeople">
+      <v-icon>fas fa-sync</v-icon>
+    </v-btn>
     <v-container fluid>
       <v-row>
-        <v-col cols="12" md="3" v-for="(person, index) in people" :key="person._id">
+        <v-col lg="3" md="6" v-for="(person, index) in people" :key="person._id">
           <v-card elevation="5">
             <v-img :src="person.imageUrl" height="130px"></v-img>
             <v-card-title>{{person.name}}</v-card-title>
             <v-card-subtitle>{{person.degree}}</v-card-subtitle>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-card-text v-on="on">Counter: {{person.counter}}</v-card-text>
-              </template>
-              <span>How many times this person was detected</span>
-            </v-tooltip>
+            <v-card-text>Counter: {{person.counter}}</v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn dark small color="teal lighten-1" @click="onEditPerson(index)">
@@ -33,19 +31,9 @@
               <v-btn dark small color="red darken-2" @click="onDeletePerson(index)">
                 <v-icon small>fas fa-trash-alt</v-icon>
               </v-btn>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    dark
-                    small
-                    color="red darken-2"
-                    v-on="on"
-                    @click="resetCounter(index)"
-                    text
-                  >Reset</v-btn>
-                </template>
-                <span>Reset the counter of the person (how many time he was detected)</span>
-              </v-tooltip>
+              <v-btn dark small color="red darken-2" @click="resetCounter(index)" text>
+                <span>Reset Counter</span>
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -54,7 +42,7 @@
       <v-overlay :value="addPersonOverlay">
         <v-container>
           <v-row align="center" justify="center">
-            <v-col>
+            <v-col lg="12" md="6">
               <v-card class="elevation-12">
                 <v-toolbar color="teal lighten-1" dark flat>
                   <v-toolbar-title>Add Person</v-toolbar-title>
@@ -114,7 +102,7 @@
       <v-overlay :value="editPersonOverlay">
         <v-container>
           <v-row align="center" justify="center">
-            <v-col>
+            <v-col lg="12" md="6">
               <v-card class="elevation-12">
                 <v-toolbar color="teal lighten-1" dark flat>
                   <v-toolbar-title>Edit Person</v-toolbar-title>
@@ -174,7 +162,7 @@
       <v-overlay :value="deletePersonOverlay">
         <v-container>
           <v-row align="center" justify="center">
-            <v-col>
+            <v-col lg="12" md="6">
               <v-card class="elevation-12">
                 <v-toolbar color="teal lighten-1" dark flat>
                   <v-toolbar-title>Deleting Person</v-toolbar-title>
@@ -438,26 +426,37 @@ export default {
           this.logMessage = error.response.data.message;
           this.sbcolor = "error";
         });
+    },
+    getPeople() {
+      this.$nuxt.$loading.start();
+      const user = this.$store.getters.getUser;
+      axios
+        .get(`${process.env.baseUrl}/people`, {
+          params: {
+            userId: user._id
+          },
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${user.token}`
+          }
+        })
+        .then(response => {
+          let user = this.$store.getters.getUser;
+          user.people = response.data.people;
+          this.people = user.people;
+          this.$store.dispatch("setUser", user);
+          this.$nuxt.$loading.finish();
+        })
+        .catch(error => {
+          this.$nuxt.$loading.finish();
+          this.snackbar = true;
+          this.logMessage = error.response.data.message;
+          this.sbcolor = "error";
+        });
     }
   },
   created() {
-    const user = this.$store.getters.getUser;
-    axios
-      .get(`${process.env.baseUrl}/people`, {
-        params: {
-          userId: user._id
-        },
-        headers: {
-          "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`
-        }
-      })
-      .then(response => {
-        let user = this.$store.getters.getUser;
-        user.people = response.data.people;
-        this.people = user.people;
-        this.$store.dispatch("setUser", user);
-      });
+    this.getPeople();
   }
 };
 </script>
