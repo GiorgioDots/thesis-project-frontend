@@ -49,6 +49,19 @@
                   name="telegramId"
                   type="text"
                 />
+                <v-text-field
+                  v-model="formData.confidence"
+                  :rules="confidenceRules"
+                  label="Face Recognition Precision (1 low - 99 very high - reccomended: 50)"
+                  required
+                  name="confidence"
+                  type="number"
+                />
+                <v-select
+                  v-model="formData.resolution"
+                  :items="resolutionsItems"
+                  label="Photos Resolution"
+                ></v-select>
               </v-form>
             </v-card-text>
             <v-card-actions>
@@ -82,7 +95,9 @@ export default {
         email: "",
         password: "",
         raspiId: "",
-        telegramId: ""
+        telegramId: "",
+        resolution: "",
+        confidence: 50
       },
       snackbar: false,
       sbcolor: "",
@@ -91,10 +106,23 @@ export default {
       nameRules: [v => !!v || "Name is required"],
       passwordRules: [v => !!v || "Password is required"],
       raspiIdRules: [v => !!v || "Raspi ID is required"],
+      confidenceRules: [
+        v => (v > 0 && v < 100) || "Confidence must be between 0 and 100"
+      ],
       telegramIdRules: [v => !!v || "Telegram ID is required"],
       emailRules: [
         v => !!v || "E-mail is required",
         v => /.+@.+\..+/.test(v) || "E-mail must be valid"
+      ],
+      resolutionsItems: [
+        "1920x1080",
+        "	1600×1200",
+        "1680×1050",
+        "1400×1050",
+        "1440×900",
+        "1280×1024",
+        "1280×720",
+        "640×480"
       ]
     };
   },
