@@ -15,6 +15,9 @@
       <v-list-item link to="/people" @click="$emit('changePage')">
         <v-list-item-content>People</v-list-item-content>
       </v-list-item>
+      <v-list-item link to="/raspi-config" @click="$emit('changePage')">
+        <v-list-item-content>Raspberry Configuration</v-list-item-content>
+      </v-list-item>
       <v-list-item link to="/settings" @click="$emit('changePage')">
         <v-list-item-content>Settings</v-list-item-content>
       </v-list-item>
