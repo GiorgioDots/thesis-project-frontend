@@ -1,0 +1,100 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ isLogin ? "Login" : "Sign Up" }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="container">
+    <form (ngSubmit)="onSubmit(f)" #f="ngForm">
+      <ion-grid>
+        <ion-row>
+          <ion-col size-sm="6" size-md="4" offset-sm="3" offset-md="4">
+            <ion-list>
+              <div *ngIf="!isLogin">
+                <ion-item>
+                  <ion-label position="floating">Name</ion-label>
+                  <ion-input
+                    type="text"
+                    name="name"
+                    ngModel
+                    required
+                    #nameCtrl="ngModel"
+                  ></ion-input>
+                </ion-item>
+                <ion-item
+                  lines="none"
+                  *ngIf="nameCtrl.invalid && nameCtrl.touched"
+                >
+                  <ion-label class="error-label" color="danger"
+                    >Please insert your name.</ion-label
+                  >
+                </ion-item>
+              </div>
+              <ion-item>
+                <ion-label position="floating">E-Mail</ion-label>
+                <ion-input
+                  type="email"
+                  name="email"
+                  ngModel
+                  required
+                  email
+                  #emailCtrl="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-item
+                lines="none"
+                *ngIf="emailCtrl.invalid && emailCtrl.touched"
+              >
+                <ion-label color="danger" class="error-label"
+                  >Please insert a valid email.</ion-label
+                >
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Password</ion-label>
+                <ion-input
+                  type="password"
+                  name="password"
+                  ngModel
+                  required
+                  minlength="8"
+                  #pwdCtrl="ngModel"
+                ></ion-input>
+              </ion-item>
+              <ion-item lines="none" *ngIf="pwdCtrl.invalid && pwdCtrl.touched">
+                <ion-label color="danger" class="error-label"
+                  >Please insert a password with 8 min characters.</ion-label
+                >
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-sm="6" size-md="4" offset-sm="3" offset-md="4">
+            <ion-button
+              [disabled]="f.invalid"
+              color="secondary"
+              type="submit"
+              expand="block"
+            >
+              {{ isLogin ? "LOGIN" : "SIGN UP" }}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-sm="6" size-md="4" offset-sm="3" offset-md="4">
+            <ion-button
+              color="secondary"
+              type="button"
+              fill="clear"
+              expand="block"
+              (click)="switchAuthMode(f)"
+            >
+              SWITCH TO {{ !isLogin ? "LOGIN" : "SIGN UP" }}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </div>
+</ion-content>
