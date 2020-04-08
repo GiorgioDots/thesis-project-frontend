@@ -1,0 +1,7 @@
+{
+  "name": "RaspiFace-Utility",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
