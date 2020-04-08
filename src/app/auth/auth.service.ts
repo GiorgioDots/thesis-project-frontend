@@ -51,6 +51,22 @@ export class AuthService {
     );
   }
 
+  get user() {
+    return this._user.asObservable().pipe(
+      map((user) => {
+        if (user) {
+          return {
+            email: user.email,
+            name: user.name,
+            id: user.id,
+          };
+        } else {
+          return null;
+        }
+      })
+    );
+  }
+
   signup(name: String, email: String, password: String) {
     return this.http
       .post<AuthResponseData>(
@@ -102,7 +118,6 @@ export class AuthService {
           return null;
         }
         const jData = JSON.parse(storedData.value);
-        console.log(jData);
         const user = new User(jData.id, jData.email, jData.name, jData._token);
         return user;
       }),
