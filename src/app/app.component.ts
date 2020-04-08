@@ -110,7 +110,6 @@ export class AppComponent implements OnInit, OnDestroy {
       message: message,
       duration: 2500,
       keyboardClose: true,
-      position: "top",
     });
     alertEl.present();
   }
