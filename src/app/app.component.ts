@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterContentInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 
 import { Platform, ToastController } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
@@ -6,7 +6,6 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { Subscription } from "rxjs";
 import { AuthService } from "./auth/auth.service";
 import { Router } from "@angular/router";
-import { User } from "./auth/user.model";
 
 @Component({
   selector: "app-root",

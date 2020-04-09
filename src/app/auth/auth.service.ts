@@ -7,10 +7,15 @@ import { Plugins } from "@capacitor/core";
 
 import { environment } from "../../environments/environment.prod";
 
-interface UserInfo {
+export interface UserInfo {
   id: String;
   email: String;
   name: String;
+  telegramIds?: [{
+    _id: String;
+    name: String;
+    telegramId: String;
+  }];
 }
 
 export interface AuthResponseData {
