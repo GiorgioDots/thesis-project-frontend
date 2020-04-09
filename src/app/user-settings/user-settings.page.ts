@@ -98,9 +98,9 @@ export class UserSettingsPage implements OnInit, OnDestroy {
       .updateSettings(this.userSettingsForm.value)
       .subscribe(
         (res) => {
+          this.router.navigateByUrl("/user-settings");
           this.isLoading = false;
           this.showToast(res.message, "success");
-          this.router.navigateByUrl("/dashboard");
         },
         (error) => {
           console.log(error);
@@ -108,8 +108,8 @@ export class UserSettingsPage implements OnInit, OnDestroy {
           if (error.status !== 0) {
             msg = error.error.message;
           }
-          this.showToast(msg, "danger");
           this.isLoading = false;
+          this.showToast(msg, "danger");
         }
       );
   }

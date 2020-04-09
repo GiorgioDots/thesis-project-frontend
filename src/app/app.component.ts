@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Router } from "@angular/router";
 
 import { Platform, ToastController } from "@ionic/angular";
-import { SplashScreen } from "@ionic-native/splash-screen/ngx";
-import { StatusBar } from "@ionic-native/status-bar/ngx";
+import { Capacitor, Plugins } from "@capacitor/core";
+
 import { Subscription } from "rxjs";
+
 import { AuthService } from "./auth/auth.service";
-import { Router } from "@angular/router";
 
 @Component({
   selector: "app-root",
@@ -50,8 +51,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private platform: Platform,
-    private splashScreen: SplashScreen,
-    private statusBar: StatusBar,
     private authService: AuthService,
     private router: Router,
     private toastCtrl: ToastController
@@ -61,8 +60,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      if (Capacitor.isPluginAvailable("SplashScreen")) {
+        Plugins.SplashScreen.hide();
+      }
     });
   }
 
@@ -99,6 +99,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.isAuthSub) {
       this.isAuthSub.unsubscribe();
+    }
+    if (this.userSub) {
+      this.userSub.unsubscribe();
     }
   }
 
