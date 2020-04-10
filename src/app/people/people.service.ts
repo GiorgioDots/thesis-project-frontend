@@ -57,8 +57,42 @@ export class PeopleService {
         });
         return response;
       }),
+      take(1),
       tap((response) => {
         this._people.next(response.people);
+      })
+    );
+  }
+
+  getPerson(personId) {
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.http.get<PersonResponseData>(
+          `${environment.BACKEND_URL}/people/${personId}`,
+          {
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${token}`,
+            }),
+          }
+        );
+      }),
+      take(1),
+      map((res) => {
+        const person = new Person(
+          res.person._id,
+          res.person.name,
+          res.person.description,
+          res.person.counter,
+          res.person.imageUrl,
+          res.person.doNotify,
+          new Date(res.person.createdAt),
+          new Date(res.person.updatedAt)
+        );
+        return {
+          person: person,
+          message: res.message,
+        };
       })
     );
   }
@@ -96,7 +130,7 @@ export class PeopleService {
     body.append("image", data.image);
     body.append("name", `${data.name}`);
     body.append("description", `${data.description}`);
-    body.append("doNotify", `"${data.doNotify}"`);
+    body.append("doNotify", `${data.doNotify}`);
     let newPerson: Person;
     return this.authService.token.pipe(
       take(1),
@@ -118,6 +152,22 @@ export class PeopleService {
         people.push(newPerson);
         this._people.next(people);
       })
+    );
+  }
+
+  updatePerson(personId: String, data) {
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.http.put<PersonResponseData>(
+          `${environment.BACKEND_URL}/people/${personId}`,
+          data,
+          {
+            headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+          }
+        );
+      }),
+      take(1)
     );
   }
 }

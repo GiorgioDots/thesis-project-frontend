@@ -37,7 +37,6 @@ export class AddPersonComponent implements OnInit {
       () => {
         this.showToast("Person Created Successfully", "success");
         this.onCancel();
-        this.isLoading = false;
       },
       (error) => {
         console.log(error);
