@@ -1,16 +1,18 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ToastController } from "@ionic/angular";
 import { Person } from "../person.model";
 import { PeopleService } from "../people.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-person",
   templateUrl: "./person.page.html",
   styleUrls: ["./person.page.scss"],
 })
-export class PersonPage implements OnInit {
+export class PersonPage implements OnInit, OnDestroy {
   private personId: String;
+  private personSub: Subscription;
   public isLoading = false;
   public person: Person;
 
@@ -29,7 +31,7 @@ export class PersonPage implements OnInit {
       }
       this.personId = paramMap.get("personId");
       this.isLoading = true;
-      this.peopleService.getPerson(this.personId).subscribe(
+      this.personSub = this.peopleService.getPerson(this.personId).subscribe(
         (response) => {
           this.person = response.person;
           this.isLoading = false;
@@ -37,15 +39,19 @@ export class PersonPage implements OnInit {
         (error) => {
           console.log(error);
           let msg = "Cannot get the person. Please try again later";
-          if (error.status !== 0) {
+          if (error.error.message) {
             msg = error.error.message;
           }
-          this.isLoading = false;
           this.showToast(msg, "danger");
+          this.isLoading = false;
           this.router.navigateByUrl("/people");
         }
       );
     });
+  }
+
+  ngOnDestroy() {
+    this.personSub.unsubscribe();
   }
 
   onEdit() {

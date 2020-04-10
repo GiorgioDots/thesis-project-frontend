@@ -6,6 +6,8 @@ import { Capacitor, Plugins } from "@capacitor/core";
 
 import { Subscription } from "rxjs";
 
+import { Socket } from 'ngx-socket-io';
+
 import { AuthService } from "./auth/auth.service";
 
 @Component({

@@ -44,11 +44,11 @@ export class EditPersonPage implements OnInit {
         (error) => {
           console.log(error);
           let msg = "Cannot get the person. Please try again later";
-          if (error.status !== 0) {
+          if (error.error.message) {
             msg = error.error.message;
           }
-          this.isLoading = false;
           this.showToast(msg, "danger");
+          this.isLoading = false;
           this.router.navigateByUrl("/people");
         }
       );
@@ -73,11 +73,11 @@ export class EditPersonPage implements OnInit {
         (error) => {
           console.log(error);
           let msg = "Cannot get the person. Please try again later";
-          if (error.status !== 0) {
+          if (error.error.message) {
             msg = error.error.message;
           }
-          this.isLoading = false;
           this.showToast(msg, "danger");
+          this.isLoading = false;
           this.router.navigateByUrl("/people");
         }
       );

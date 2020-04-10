@@ -47,7 +47,7 @@ export class RaspberriesPage implements OnInit, OnDestroy {
       (error) => {
         console.log(error);
         let msg = "Cannot update the data. Please try again later";
-        if (error.status !== 0) {
+        if (error.error.message) {
           msg = error.error.message;
         }
         this.showToast(msg, "danger");
@@ -56,13 +56,32 @@ export class RaspberriesPage implements OnInit, OnDestroy {
     );
   }
 
-  onDeletePerson(raspiId) {}
+  onDeleteRaspberry(raspiId) {
+    this.isLoading = true;
+    this.raspiService.deleteRaspberry(raspiId).subscribe(
+      () => {
+        this.isLoading = false;
+        this.showToast("Deleted.", "success");
+      },
+      (error) => {
+        console.log(error);
+        let msg = "Cannot update the data. Please try again later";
+        if (error) {
+          msg = error.error.message;
+        }
+        this.showToast(msg, "danger");
+        this.isLoading = false;
+      }
+    );
+  }
 
   onAddRaspberry() {
     this.presentModal();
   }
 
-  onOpenPerson(raspiId) {}
+  onOpenPerson(raspiId) {
+    this.router.navigate(["/", "raspberries", raspiId]);
+  }
 
   onSearch(event: any) {
     let filter = event.srcElement.value.toLowerCase();

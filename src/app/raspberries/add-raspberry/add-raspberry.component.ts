@@ -47,7 +47,7 @@ export class AddRaspberryComponent implements OnInit {
       (error) => {
         console.log(error);
         let msg = "Cannot create the raspberry. Please try again later";
-        if (error.status !== 0) {
+        if (error.error.message) {
           msg = error.error.message;
         }
         this.showToast(msg, "danger");

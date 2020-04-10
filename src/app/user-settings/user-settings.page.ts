@@ -79,7 +79,7 @@ export class UserSettingsPage implements OnInit, OnDestroy {
       },
       (error) => {
         let msg = "Cannot fetch the data. Please try again later";
-        if (error.status !== 0) {
+        if (error.error.message) {
           msg = error.error.message;
         }
         this.showToast(msg, "danger");
@@ -105,11 +105,11 @@ export class UserSettingsPage implements OnInit, OnDestroy {
         (error) => {
           console.log(error);
           let msg = "Cannot update the data. Please try again later";
-          if (error.status !== 0) {
+          if (error.error.message) {
             msg = error.error.message;
           }
-          this.isLoading = false;
           this.showToast(msg, "danger");
+          this.isLoading = false;
         }
       );
   }
