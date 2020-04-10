@@ -17,7 +17,17 @@
           <ion-col size-sm="6" size-lg="4" offset-sm="3" offset-lg="4">
             <ion-item>
               <ion-label position="floating">Name</ion-label>
-              <ion-input type="text" formControlName="name"></ion-input>
+              <ion-input type="text" formControlName="name" clearInput></ion-input>
+            </ion-item>
+            <ion-item
+              lines="none"
+              *ngIf="
+              personForm.get('name').invalid && personForm.get('name').touched
+            "
+            >
+              <ion-label color="danger" class="error-label"
+                >The person name is required.</ion-label
+              >
             </ion-item>
           </ion-col>
         </ion-row>
@@ -25,7 +35,10 @@
           <ion-col size-sm="6" size-lg="4" offset-sm="3" offset-lg="4">
             <ion-item>
               <ion-label position="floating">Description</ion-label>
-              <ion-textarea rows="3" formControlName="description"></ion-textarea>
+              <ion-textarea
+                rows="3"
+                formControlName="description"
+              ></ion-textarea>
             </ion-item>
           </ion-col>
         </ion-row>

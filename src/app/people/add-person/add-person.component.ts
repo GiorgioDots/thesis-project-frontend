@@ -21,7 +21,7 @@ export class AddPersonComponent implements OnInit {
   ngOnInit() {
     this.personForm = new FormGroup({
       name: new FormControl(null, [Validators.required]),
-      description: new FormControl(null, [Validators.required]),
+      description: new FormControl(''),
       doNotify: new FormControl(true, [Validators.required]),
       image: new FormControl(null),
     });
