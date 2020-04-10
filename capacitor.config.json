@@ -1,5 +1,5 @@
 {
-  "appId": "io.ionic.starter",
+  "appId": "io.giorgiodots.raspiface.utility",
   "appName": "RaspiFace-Utility",
   "bundledWebRuntime": false,
   "npmClient": "npm",

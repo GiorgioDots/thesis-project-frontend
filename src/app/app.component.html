@@ -4,7 +4,7 @@
       <ion-content>
         <ion-list id="main-list">
           <ion-list-header>RaspiFace</ion-list-header>
-          <ion-note>hi@User Name</ion-note>
+          <ion-note>hi@{{ user.name }}</ion-note>
           <ion-menu-toggle
             auto-hide="false"
             *ngFor="let p of appPages; let i = index"

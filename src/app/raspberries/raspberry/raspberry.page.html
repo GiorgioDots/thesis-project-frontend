@@ -1,10 +1,101 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="raspberries"></ion-back-button>
+      <ion-back-button
+        color="primary"
+        defaultHref="raspberries"
+      ></ion-back-button>
     </ion-buttons>
-    <ion-title>raspberry</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content> </ion-content>
+<ion-content>
+  <div *ngIf="isLoading" id="container">
+    <ion-spinner color="tertiary"></ion-spinner>
+  </div>
+  <ion-grid *ngIf="!isLoading">
+    <ion-row>
+      <ion-col size-md="6" offset-md="3">
+        <ion-item lines="none">
+          <ion-label>
+            <h1>{{raspberry.name}}</h1>
+            <p>{{raspberry.raspiId}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-md="6" offset-md="3">
+        <ion-item lines="none">
+          <ion-buttons slot="end">
+            <ion-button color="secondary" (click)="onEdit()">
+              EDIT
+              <ion-icon name="create" slot="end"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-buttons slot="start">
+            <ion-button
+              (click)="onToggleStatus()"
+              fill="solid"
+              color="secondary"
+            >
+              TOGGLE STATUS
+              <ion-icon name="toggle" slot="end"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-md="6" offset-md="3">
+        <ion-item>
+          <ion-label
+            >Status: {{raspberry.isActive ? 'active' : 'disabled'}}</ion-label
+          >
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-md="6" offset-md="3">
+        <ion-item>
+          <ion-label>
+            Resolution: {{raspberry.resolution}}
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-md="6" offset-md="3">
+        <ion-item>
+          <ion-label>
+            Confidence: {{raspberry.confidence}}
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="raspberry.lastImages.length > 0">
+      <ion-col size-md="6" offset-md="3">
+        <ion-item lines="none">
+          <ion-label>Live images:</ion-label>
+        </ion-item>
+        <ion-slides pager="true" [options]="slideOpts">
+          <ion-slide *ngFor="let lastImage of raspberry.lastImages">
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <h5>Time: {{lastImage.timestamp | date:'medium'}}</h5>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  <ion-img [src]="lastImage.imageUrl"></ion-img>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-slide>
+        </ion-slides>
+        <ion-item> </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

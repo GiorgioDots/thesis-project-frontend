@@ -53,6 +53,7 @@ export class AuthPage implements OnInit {
         loadingEl.dismiss();
         this.router.navigateByUrl("/");
         this.showToast(response.message, "success");
+        form.reset();
       },
       (error) => {
         loadingEl.dismiss();
@@ -68,7 +69,6 @@ export class AuthPage implements OnInit {
       message: message,
       duration: 2500,
       keyboardClose: true,
-      position: "top",
     });
     alertEl.present();
   }

@@ -6,11 +6,19 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Plugins } from "@capacitor/core";
 
 import { environment } from "../../environments/environment.prod";
+import { Socket } from "ngx-socket-io";
 
-interface UserInfo {
+export interface UserInfo {
   id: String;
   email: String;
   name: String;
+  telegramIds?: [
+    {
+      _id: String;
+      name: String;
+      telegramId: String;
+    }
+  ];
 }
 
 export interface AuthResponseData {
@@ -25,7 +33,7 @@ export interface AuthResponseData {
 export class AuthService {
   private _user = new BehaviorSubject<User>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private socket: Socket) {}
 
   get userIsAuthenticated() {
     return this._user.asObservable().pipe(
@@ -44,6 +52,22 @@ export class AuthService {
       map((user) => {
         if (user) {
           return user.token;
+        } else {
+          return null;
+        }
+      })
+    );
+  }
+
+  get user() {
+    return this._user.asObservable().pipe(
+      map((user) => {
+        if (user) {
+          return {
+            email: user.email,
+            name: user.name,
+            id: user.id,
+          };
         } else {
           return null;
         }
@@ -81,6 +105,7 @@ export class AuthService {
 
   logout() {
     Plugins.Storage.remove({ key: "authData" });
+    this.socket.disconnect();
     this._user.next(null);
   }
 
@@ -92,6 +117,8 @@ export class AuthService {
       data.token
     );
     this._user.next(user);
+    this.socket.connect();
+    this.socket.emit("identification", JSON.stringify({ id: user.id }));
     Plugins.Storage.set({ key: "authData", value: JSON.stringify(user) });
   }
 
@@ -102,8 +129,8 @@ export class AuthService {
           return null;
         }
         const jData = JSON.parse(storedData.value);
-        console.log(jData);
         const user = new User(jData.id, jData.email, jData.name, jData._token);
+        this.socket.emit("identification", JSON.stringify({ id: user.id }));
         return user;
       }),
       tap((user) => {
