@@ -1,20 +1,23 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { RaspberriesPageRoutingModule } from './raspberries-routing.module';
+import { RaspberriesPageRoutingModule } from "./raspberries-routing.module";
 
-import { RaspberriesPage } from './raspberries.page';
+import { RaspberriesPage } from "./raspberries.page";
+import { AddRaspberryComponent } from "./add-raspberry/add-raspberry.component";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    RaspberriesPageRoutingModule
+    ReactiveFormsModule,
+    RaspberriesPageRoutingModule,
   ],
-  declarations: [RaspberriesPage]
+  declarations: [RaspberriesPage, AddRaspberryComponent],
+  entryComponents: [AddRaspberryComponent],
 })
 export class RaspberriesPageModule {}
