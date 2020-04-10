@@ -115,7 +115,11 @@
         <ion-col size-sm="10" offset-sm="1">
           <ion-item>
             <ion-label>Resolution</ion-label>
-            <ion-select value="1280x720" cancelText="Cancel" okText="Okay">
+            <ion-select
+              formControlName="resolution"
+              cancelText="Cancel"
+              okText="Okay"
+            >
               <ion-select-option
                 *ngFor="let resolution of resolutions"
                 [value]="resolution"

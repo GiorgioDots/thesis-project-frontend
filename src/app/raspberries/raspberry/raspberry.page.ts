@@ -40,7 +40,7 @@ export class RaspberryPage implements OnInit, OnDestroy {
           return;
         }
         this.raspberry = raspberry;
-        this.raspberry.lastImages.reverse();
+        this.raspberry.lastImages = this.raspberry.lastImages.reverse();
       });
     });
 
@@ -96,6 +96,10 @@ export class RaspberryPage implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     );
+  }
+
+  onEdit() {
+    this.router.navigate(["/", "raspberries", this.raspiId, "edit"]);
   }
 
   updateLastImage(msg) {

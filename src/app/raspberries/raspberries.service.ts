@@ -80,7 +80,9 @@ export class RaspberriesService {
           response.raspberry.isActive,
           response.raspberry.lastImages,
           new Date(response.raspberry.createdAt),
-          new Date(response.raspberry.updatedAt)
+          new Date(response.raspberry.updatedAt),
+          response.raspberry.wifiSSID,
+          response.raspberry.wifiPassword
         );
         return this.raspberries;
       }),
@@ -155,6 +157,9 @@ export class RaspberriesService {
           updatedAt: new Date(response.raspberry.updatedAt),
         };
         return response;
+      }),
+      tap((response) => {
+        this._raspberry.next(response.raspberry);
       })
     );
   }

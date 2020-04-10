@@ -13,7 +13,6 @@ export class AddRaspberryComponent implements OnInit {
   public isLoading = false;
   public raspiForm: FormGroup;
   public resolutions = ["1920x1080", "1280x720", "640x480"];
-  public useWifi = false;
 
   constructor(
     private modalCtrl: ModalController,
