@@ -163,4 +163,17 @@ export class RaspberriesService {
       })
     );
   }
+
+  updateRaspberryLastImages(raspiId, newImages) {
+    return this.raspberry.pipe(
+      take(1),
+      tap((raspberry) => {
+        if (raspberry) {
+          if (raspberry.raspiId === raspiId) {
+            this._raspberry.next({ ...raspberry, lastImages: newImages });
+          }
+        }
+      })
+    );
+  }
 }

@@ -65,7 +65,22 @@
               clearInput
               type="password"
               formControlName="wifiPassword"
+              *ngIf="!showPassword"
             ></ion-input>
+            <ion-input
+              clearInput
+              type="text"
+              formControlName="wifiPassword"
+              *ngIf="showPassword"
+            ></ion-input>
+            <ion-buttons slot="end">
+              <ion-button color="primary" (click)="showPassword = !showPassword">
+                <ion-icon
+                  slot="icon-only"
+                  [name]="showPassword ? 'eye-off':'eye'"
+                ></ion-icon>
+              </ion-button>
+            </ion-buttons>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -92,7 +107,11 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-item>
             <ion-label>Resolution</ion-label>
-            <ion-select formControlName="resolution" cancelText="Cancel" okText="Okay">
+            <ion-select
+              formControlName="resolution"
+              cancelText="Cancel"
+              okText="Okay"
+            >
               <ion-select-option
                 *ngFor="let resolution of resolutions"
                 [value]="resolution"

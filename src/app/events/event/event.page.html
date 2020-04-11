@@ -1,10 +1,58 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="events"></ion-back-button>
+      <ion-back-button color="primary" defaultHref="events"></ion-back-button>
     </ion-buttons>
-    <ion-title>event</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content> </ion-content>
+<ion-content>
+  <div *ngIf="isLoading" id="container">
+    <ion-spinner color="tertiary"></ion-spinner>
+  </div>
+  <ion-grid *ngIf="!isLoading">
+    <ion-row>
+      <ion-col
+        size-sm="10"
+        offset-sm="1"
+        size-md="8"
+        offset-md="2"
+        size-xl="6"
+        offset-xl="3"
+      >
+        <ion-card>
+          <img [src]="event.imageUrl" />
+          <ion-card-header>
+            <ion-card-title>Madison, WI</ion-card-title>
+            <ion-card-subtitle>RaspiId: {{event.raspiId}}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <h2>Description:</h2>
+            <p>{{event.description}}</p>
+          </ion-card-content>
+          <ion-item (click)="goToRaspberry()" button detail>
+            <ion-label>
+              <h2>Raspberry:</h2>
+              <p>{{event.raspiId}}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item
+            (click)="goToPerson()"
+            button
+            detail
+            lines="none"
+            *ngIf="event.person"
+          >
+            <ion-avatar slot="start">
+              <ion-img [src]="event.person.imageUrl"> </ion-img>
+            </ion-avatar>
+            <ion-label>
+              <h2>Person detected:</h2>
+              <p>{{event.person.name}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
