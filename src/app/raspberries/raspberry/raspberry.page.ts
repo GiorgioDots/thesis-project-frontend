@@ -39,12 +39,11 @@ export class RaspberryPage implements OnInit, OnDestroy {
         if (!raspberry) {
           return;
         }
+        console.log(raspberry);
         this.raspberry = raspberry;
         this.raspberry.lastImages = this.raspberry.lastImages.reverse();
       });
     });
-
-    this.socket.on("live-stream-image", this.updateLastImage.bind(this));
   }
 
   ionViewWillEnter() {
@@ -66,7 +65,9 @@ export class RaspberryPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.raspiSub.unsubscribe();
+    if (this.raspiSub) {
+      this.raspiSub.unsubscribe();
+    }
   }
 
   onToggleStatus() {
@@ -100,14 +101,6 @@ export class RaspberryPage implements OnInit, OnDestroy {
 
   onEdit() {
     this.router.navigate(["/", "raspberries", this.raspiId, "edit"]);
-  }
-
-  updateLastImage(msg) {
-    if (!msg) {
-      return;
-    }
-    const newImages = JSON.parse(msg).reverse();
-    this.raspberry.lastImages = newImages;
   }
 
   private async showToast(message, color) {

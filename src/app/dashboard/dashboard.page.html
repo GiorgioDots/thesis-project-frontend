@@ -7,4 +7,129 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content> </ion-content>
+<ion-content class="ion-padding">
+  <div *ngIf="isLoading" id="container">
+    <ion-spinner color="tertiary"></ion-spinner>
+  </div>
+  <ion-grid *ngIf="!isLoading">
+    <ion-row>
+      <ion-col size-lg="8" offset-lg="2">
+        <ion-item lines="none">
+          <ion-label [color]="plantStatusColor">
+            Plant is {{dashboard.plantStatus}}
+          </ion-label>
+          <ion-select
+            (ionChange)="onChangeAction($event)"
+            placeholder="Choose an action"
+          >
+            <ion-select-option value="activate">
+              Activate All
+            </ion-select-option>
+            <ion-select-option value="disactivate">
+              Disactivate All
+            </ion-select-option>
+          </ion-select>
+          <ion-buttons slot="end">
+            <ion-button (click)="onSendAction()" [disabled]="!selectedAction" color="secondary">
+              Send Action
+              <ion-icon slot="end" name="checkmark"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="dashboard.people.length > 0">
+      <ion-col size-lg="8" offset-lg="2">
+        <ion-card>
+          <highcharts-chart
+            [Highcharts]="Highcharts"
+            [options]="chartOptions"
+            [callbackFunction]="chartCallback"
+            [(update)]="updateChart"
+            (chartInstance)="onChartInstance($event)"
+            style="width: 100%; height: 100%; display: block;"
+          ></highcharts-chart>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col
+        size-lg="8"
+        offset-lg="2"
+        *ngIf="dashboard.raspberriesImages.length > 0"
+      >
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title
+              >Select the raspberry to watch the live images</ion-card-title
+            >
+            <ion-select
+              (ionChange)="onChangeSelectRaspi($event)"
+              color="tertiary"
+              placeholder="Raspberry"
+            >
+              <ion-select-option
+                *ngFor="let raspi of dashboard.raspberriesImages"
+                [value]="raspi.raspiId"
+                >{{raspi.name}}</ion-select-option
+              >
+              <ion-select-option [value]="null">None</ion-select-option>
+            </ion-select>
+          </ion-card-header>
+          <div *ngFor="let raspi of dashboard.raspberriesImages">
+            <ion-slides
+              *ngIf="raspi.raspiId == selectedRaspi && selectedRaspi!=null"
+              pager="true"
+            >
+              <ion-slide *ngFor="let image of raspi.lastImages">
+                <ion-grid>
+                  <ion-row>
+                    <ion-col>
+                      <ion-item lines="none">
+                        <h5>Time: {{image.timestamp | date:'medium'}}</h5>
+                        <ion-buttons slot="end">
+                          <ion-button [href]="image.imageUrl" color="secondary">
+                            <ion-icon
+                              slot="icon-only"
+                              name="download"
+                            ></ion-icon>
+                          </ion-button>
+                        </ion-buttons>
+                      </ion-item>
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <ion-img [src]="image.imageUrl"></ion-img>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-slide>
+            </ion-slides>
+          </div>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="8" offset-lg="2" *ngIf="dashboard.events.length > 0">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Last 3 events:</ion-card-title>
+          </ion-card-header>
+          <ion-list *ngFor="let event of dashboard.events">
+            <ion-item detail button (click)="goToEvent(event._id)">
+              <ion-thumbnail slot="start">
+                <ion-img [src]="event.imageUrl"></ion-img>
+              </ion-thumbnail>
+              <ion-label>
+                <h2>{{event.description}}</h2>
+                <p>Created At: {{event.createdAt | date:'medium'}}</p>
+                <p>Detected by: {{event.raspiId}}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

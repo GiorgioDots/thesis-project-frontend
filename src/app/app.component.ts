@@ -10,6 +10,8 @@ import { Socket } from "ngx-socket-io";
 
 import { AuthService } from "./auth/auth.service";
 import { EventsService } from "./events/events.service";
+import { DashboardService } from "./dashboard/dashboard.service";
+import { RaspberriesService } from "./raspberries/raspberries.service";
 
 @Component({
   selector: "app-root",
@@ -20,6 +22,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private previousAuthState = false;
   private isAuthSub: Subscription;
   private userSub: Subscription;
+  public eventSub: Subscription;
+  public dashboardSub: Subscription;
   public user: { name: String; email: String; id: String };
   public isAuth = false;
   public selectedIndex = 0;
@@ -58,7 +62,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastCtrl: ToastController,
     private socket: Socket,
-    private eventsService: EventsService
+    private eventsService: EventsService,
+    private dashboardService: DashboardService,
+    private raspberriesService: RaspberriesService
   ) {
     this.initializeApp();
   }
@@ -94,6 +100,10 @@ export class AppComponent implements OnInit, OnDestroy {
       this.user = user;
     });
     this.socket.on("event", this.onNewEvent.bind(this));
+    this.socket.on(
+      "live-stream-image",
+      this.updateRaspberryLastImage.bind(this)
+    );
   }
 
   onNewEvent(msg) {
@@ -101,6 +111,18 @@ export class AppComponent implements OnInit, OnDestroy {
     this.eventsService.newEvent(newEvent).subscribe(() => {
       this.showNewEventToast(newEvent);
     });
+    this.dashboardService.getDashboard().subscribe();
+  }
+
+  updateRaspberryLastImage(msg) {
+    if (!msg) {
+      return;
+    }
+    const newImages = JSON.parse(msg);
+    this.raspberriesService
+      .updateRaspberryLastImages(newImages.raspiId, newImages.images)
+      .subscribe();
+    this.dashboardService.getDashboard().subscribe();
   }
 
   onLogout() {
@@ -115,6 +137,12 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     if (this.userSub) {
       this.userSub.unsubscribe();
+    }
+    if (this.eventSub) {
+      this.eventSub.unsubscribe();
+    }
+    if (this.dashboardSub) {
+      this.dashboardSub.unsubscribe();
     }
   }
 
@@ -134,7 +162,7 @@ export class AppComponent implements OnInit, OnDestroy {
       animated: true,
       color: "secondary",
       message: `New event! Click 'OPEN' to open it..`,
-      duration: 10000,
+      duration: 3000,
       buttons: [
         {
           side: "end",
