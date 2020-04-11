@@ -138,7 +138,6 @@ export class AppComponent implements OnInit, OnDestroy {
       buttons: [
         {
           side: "end",
-          icon: "eye",
           text: "OPEN",
           handler: () => {
             this.router.navigate(["/", "events", event._id]);

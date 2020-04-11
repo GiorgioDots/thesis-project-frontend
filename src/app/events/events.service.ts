@@ -58,7 +58,7 @@ export class EventsService {
     return this.authService.token.pipe(
       take(1),
       switchMap((token) => {
-        return this.http.get<GetEventsResponse>(
+        return this.http.get<{ message: string; event: Event }>(
           `${environment.BACKEND_URL}/events/${eventId}`,
           {
             headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
