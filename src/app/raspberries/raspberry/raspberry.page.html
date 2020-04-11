@@ -33,16 +33,6 @@
               <ion-icon name="create" slot="end"></ion-icon>
             </ion-button>
           </ion-buttons>
-          <ion-buttons slot="start">
-            <ion-button
-              (click)="onToggleStatus()"
-              fill="solid"
-              color="secondary"
-            >
-              TOGGLE STATUS
-              <ion-icon name="toggle" slot="end"></ion-icon>
-            </ion-button>
-          </ion-buttons>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -52,6 +42,16 @@
           <ion-label
             >Status: {{raspberry.isActive ? 'active' : 'disabled'}}</ion-label
           >
+          <ion-buttons slot="end">
+            <ion-button
+              (click)="onToggleStatus()"
+              fill="solid"
+              color="secondary"
+            >
+              TOGGLE
+              <ion-icon name="toggle" slot="end"></ion-icon>
+            </ion-button>
+          </ion-buttons>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -69,6 +69,15 @@
         <ion-item>
           <ion-label>
             Confidence: {{raspberry.confidence}}
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="raspberry.wifiSSID">
+      <ion-col size-md="6" offset-md="3">
+        <ion-item>
+          <ion-label>
+            Wifi Connected: {{raspberry.wifiSSID}}
           </ion-label>
         </ion-item>
       </ion-col>

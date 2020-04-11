@@ -18,6 +18,7 @@ export class EditRaspberryPage implements OnInit, OnDestroy {
   public resolutions = ["1920x1080", "1280x720", "640x480"];
   public selectedResolution: String;
   public raspberry: Raspberry;
+  public showPassword = false;
   private raspiId: String;
   private raspiSub: Subscription;
 

@@ -52,6 +52,12 @@
               <ion-label>Times detected</ion-label>
               <ion-badge slot="end">{{person.counter}}</ion-badge>
             </ion-item>
+            <ion-item>
+              <ion-label>
+                <h2>Notify when detected:</h2>
+                <p>{{person.doNotify ? 'Yes' : 'No'}}</p>
+              </ion-label>
+            </ion-item>
           </ion-list>
           <ion-item lines="none">
             <ion-label>

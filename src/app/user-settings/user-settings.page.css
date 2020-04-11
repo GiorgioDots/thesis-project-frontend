@@ -22,3 +22,6 @@
 ion-content ion-toolbar {
   --background: transparent;
 }
+.middle {
+  --background: white;
+}

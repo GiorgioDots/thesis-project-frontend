@@ -6,9 +6,10 @@ import { Capacitor, Plugins } from "@capacitor/core";
 
 import { Subscription } from "rxjs";
 
-import { Socket } from 'ngx-socket-io';
+import { Socket } from "ngx-socket-io";
 
 import { AuthService } from "./auth/auth.service";
+import { EventsService } from "./events/events.service";
 
 @Component({
   selector: "app-root",
@@ -55,7 +56,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private platform: Platform,
     private authService: AuthService,
     private router: Router,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private socket: Socket,
+    private eventsService: EventsService
   ) {
     this.initializeApp();
   }
@@ -90,6 +93,14 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       this.user = user;
     });
+    this.socket.on("event", this.onNewEvent.bind(this));
+  }
+
+  onNewEvent(msg) {
+    const newEvent = JSON.parse(msg);
+    this.eventsService.newEvent(newEvent).subscribe(() => {
+      this.showNewEventToast(newEvent);
+    });
   }
 
   onLogout() {
@@ -108,13 +119,33 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private async showToast(message, color) {
-    const alertEl = await this.toastCtrl.create({
+    const toastEl = await this.toastCtrl.create({
       animated: true,
       color: color,
       message: message,
       duration: 2500,
-      keyboardClose: true,
     });
-    alertEl.present();
+    toastEl.present();
+  }
+
+  private async showNewEventToast(event) {
+    const toastEl = await this.toastCtrl.create({
+      position: "top",
+      animated: true,
+      color: "secondary",
+      message: `New event! Click 'OPEN' to open it..`,
+      duration: 10000,
+      buttons: [
+        {
+          side: "end",
+          icon: "eye",
+          text: "OPEN",
+          handler: () => {
+            this.router.navigate(["/", "events", event._id]);
+          },
+        },
+      ],
+    });
+    toastEl.present();
   }
 }
