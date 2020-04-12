@@ -151,7 +151,7 @@ export class EventsPage implements OnInit, OnDestroy {
             this.infiniteScrollItem = null;
           }
         }
-        this.showToast("Event deleted.", "primary");
+        this.showToast("Event deleted.", "success");
       },
       (error) => {
         console.log(error);
