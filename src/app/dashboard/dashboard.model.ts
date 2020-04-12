@@ -6,7 +6,7 @@ export class Dashboard {
   events: Event[];
   people: Person[];
   plantStatus: string;
-  raspberriesImages: RaspberryImages;
+  raspberriesImages: RaspberryImages[];
 }
 
 interface RaspberryImages {
