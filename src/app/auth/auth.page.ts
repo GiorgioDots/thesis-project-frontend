@@ -34,7 +34,7 @@ export class AuthPage implements OnInit {
 
     const loadingEl = await this.loadingCtrl.create({
       keyboardClose: true,
-      message: this.isLogin ? "Loggin in..." : "Signing Up...",
+      message: this.isLogin ? "Logging in..." : "Signing Up...",
     });
 
     loadingEl.present();
