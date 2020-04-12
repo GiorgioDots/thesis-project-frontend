@@ -1,5 +1,10 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Router } from "@angular/router";
+import {
+  Router,
+  ActivatedRoute,
+  NavigationEnd,
+  RouterEvent,
+} from "@angular/router";
 
 import { Platform, ToastController } from "@ionic/angular";
 import { Capacitor, Plugins } from "@capacitor/core";
@@ -78,12 +83,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const path = window.location.pathname.split("/")[1];
-    if (path !== undefined) {
-      this.selectedIndex = this.appPages.findIndex(
-        (page) => page.title.toLowerCase() === path.toLowerCase()
-      );
-    }
     this.isAuthSub = this.authService.userIsAuthenticated.subscribe(
       (isAuth) => {
         if (!isAuth && this.previousAuthState !== isAuth) {
@@ -104,6 +103,16 @@ export class AppComponent implements OnInit, OnDestroy {
       "live-stream-image",
       this.updateRaspberryLastImage.bind(this)
     );
+    this.router.events.subscribe((ev) => {
+      if (ev instanceof NavigationEnd) {
+        const path = ev.url.split("/")[1];
+        if (path !== undefined) {
+          this.selectedIndex = this.appPages.findIndex(
+            (page) => page.title.toLowerCase() === path.toLowerCase()
+          );
+        }
+      }
+    });
   }
 
   onNewEvent(msg) {

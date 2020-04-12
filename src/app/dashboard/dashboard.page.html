@@ -4,6 +4,11 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Dashboard</ion-title>
+    <ion-buttons slot="end">
+      <ion-button href="https://github.com/GiorgioDots" target="_blank">
+        <ion-icon slot="icon-only" name="logo-github"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -13,24 +18,35 @@
   </div>
   <ion-grid *ngIf="!isLoading">
     <ion-row>
-      <ion-col size-lg="8" offset-lg="2">
-        <ion-item lines="none">
+      <ion-col size-lg="8" offset-lg="2" *ngIf="dashboard.plantStatus">
+        <ion-item>
           <ion-label [color]="plantStatusColor">
             Plant is {{dashboard.plantStatus}}
           </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="8" offset-lg="2" *ngIf="dashboard.plantStatus">
+        <ion-item>
           <ion-select
+            slot="start"
             (ionChange)="onChangeAction($event)"
-            placeholder="Choose an action"
+            placeholder="Actions"
           >
             <ion-select-option value="activate">
-              Activate All
+              Activate Plant
             </ion-select-option>
             <ion-select-option value="disactivate">
-              Disactivate All
+              Disactivate Plant
             </ion-select-option>
           </ion-select>
           <ion-buttons slot="end">
-            <ion-button (click)="onSendAction()" [disabled]="!selectedAction" color="secondary">
+            <ion-button
+              (click)="onSendAction()"
+              [disabled]="!selectedAction"
+              color="secondary"
+            >
               Send Action
               <ion-icon slot="end" name="checkmark"></ion-icon>
             </ion-button>
@@ -38,13 +54,12 @@
         </ion-item>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="dashboard.people.length > 0">
+    <ion-row *ngIf="dashboard.people.length > 0 && hasMostDetectedP">
       <ion-col size-lg="8" offset-lg="2">
         <ion-card>
           <highcharts-chart
             [Highcharts]="Highcharts"
             [options]="chartOptions"
-            [callbackFunction]="chartCallback"
             [(update)]="updateChart"
             (chartInstance)="onChartInstance($event)"
             style="width: 100%; height: 100%; display: block;"
@@ -60,9 +75,7 @@
       >
         <ion-card>
           <ion-card-header>
-            <ion-card-title
-              >Select the raspberry to watch the live images</ion-card-title
-            >
+            <ion-card-subtitle>Raspberries live images:</ion-card-subtitle>
             <ion-select
               (ionChange)="onChangeSelectRaspi($event)"
               color="tertiary"
@@ -114,7 +127,7 @@
       <ion-col size-lg="8" offset-lg="2" *ngIf="dashboard.events.length > 0">
         <ion-card>
           <ion-card-header>
-            <ion-card-title>Last 3 events:</ion-card-title>
+            <ion-card-subtitle>Last 3 events:</ion-card-subtitle>
           </ion-card-header>
           <ion-list *ngFor="let event of dashboard.events">
             <ion-item detail button (click)="goToEvent(event._id)">
