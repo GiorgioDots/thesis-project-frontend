@@ -48,14 +48,16 @@ export class RaspberryPage implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
     this.raspiService.getRaspberry(this.raspiId).subscribe(
-      (response) => {
+      () => {
         this.isLoading = false;
       },
       (error) => {
         console.log(error);
         let msg = "Cannot get the data. Please try again later.";
-        if (error) {
-          msg = error.error.message;
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.router.navigateByUrl("/raspberries");
@@ -89,8 +91,10 @@ export class RaspberryPage implements OnInit, OnDestroy {
       (error) => {
         console.log(error);
         let msg = "Cannot update the raspberry. Please try again later.";
-        if (error) {
-          msg = error.error.message;
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.router.navigateByUrl("/raspberries");

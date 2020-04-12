@@ -76,14 +76,16 @@ export class EditRaspberryPage implements OnInit, OnDestroy {
   ionViewWillEnter() {
     this.isLoading = true;
     this.raspiService.getRaspberry(this.raspiId).subscribe(
-      (response) => {
+      () => {
         this.isLoading = false;
       },
       (error) => {
         console.log(error);
         let msg = "Cannot update the raspberry. Please try again later.";
         if (error.error) {
-          msg = error.error.message;
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.isLoading = false;
@@ -107,7 +109,9 @@ export class EditRaspberryPage implements OnInit, OnDestroy {
         console.log(error);
         let msg = "Cannot update the raspberry. Please try again later.";
         if (error.error) {
-          msg = error.error.message;
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.isLoading = false;

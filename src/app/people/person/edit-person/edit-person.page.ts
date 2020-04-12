@@ -44,8 +44,10 @@ export class EditPersonPage implements OnInit {
         (error) => {
           console.log(error);
           let msg = "Cannot get the person. Please try again later";
-          if (error.error.message) {
-            msg = error.error.message;
+          if (error.error) {
+            if (error.error.message) {
+              msg = error.error.message;
+            }
           }
           this.showToast(msg, "danger");
           this.isLoading = false;
@@ -73,8 +75,10 @@ export class EditPersonPage implements OnInit {
         (error) => {
           console.log(error);
           let msg = "Cannot get the person. Please try again later";
-          if (error.error.message) {
-            msg = error.error.message;
+          if (error.error) {
+            if (error.error.message) {
+              msg = error.error.message;
+            }
           }
           this.showToast(msg, "danger");
           this.isLoading = false;

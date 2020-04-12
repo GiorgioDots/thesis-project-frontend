@@ -41,14 +41,16 @@ export class RaspberriesPage implements OnInit, OnDestroy {
   ionViewWillEnter() {
     this.isLoading = true;
     this.raspiService.fetchRaspberries().subscribe(
-      (response) => {
+      () => {
         this.isLoading = false;
       },
       (error) => {
         console.log(error);
         let msg = "Cannot update the data. Please try again later";
-        if (error.error.message) {
-          msg = error.error.message;
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.isLoading = false;
@@ -66,8 +68,10 @@ export class RaspberriesPage implements OnInit, OnDestroy {
       (error) => {
         console.log(error);
         let msg = "Cannot update the data. Please try again later";
-        if (error) {
-          msg = error.error.message;
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.isLoading = false;
