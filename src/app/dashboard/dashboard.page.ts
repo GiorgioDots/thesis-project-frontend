@@ -23,7 +23,7 @@ export class DashboardPage implements OnInit, OnDestroy {
       type: "column",
     },
     title: {
-      text: "5 Most detecte people",
+      text: "Most detecte people (max: 5)",
     },
     xAxis: {
       categories: ["People"],
