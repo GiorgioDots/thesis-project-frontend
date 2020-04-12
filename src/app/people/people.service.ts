@@ -170,4 +170,20 @@ export class PeopleService {
       take(1)
     );
   }
+
+  resetPersonCounter(personId: string) {
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.http.post<PersonResponseData>(
+          `${environment.BACKEND_URL}/people/reset-counter/${personId}`,
+          {},
+          {
+            headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+          }
+        );
+      }),
+      take(1)
+    );
+  }
 }

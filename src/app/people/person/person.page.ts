@@ -11,7 +11,7 @@ import { Subscription } from "rxjs";
   styleUrls: ["./person.page.scss"],
 })
 export class PersonPage implements OnInit, OnDestroy {
-  private personId: String;
+  private personId: string;
   private personSub: Subscription;
   public isLoading = false;
   public person: Person;
@@ -52,6 +52,28 @@ export class PersonPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.personSub.unsubscribe();
+  }
+
+  onResetCounter() {
+    this.isLoading = true;
+    this.peopleService.resetPersonCounter(this.personId).subscribe(
+      (response) => {
+        this.showToast(response.message, "success");
+        this.person = response.person;
+        this.isLoading = false;
+      },
+      (error) => {
+        console.log(error);
+        let msg = "Cannot reset the person's counter. Please try again later";
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
+        }
+        this.showToast(msg, "danger");
+        this.isLoading = false;
+      }
+    );
   }
 
   onEdit() {

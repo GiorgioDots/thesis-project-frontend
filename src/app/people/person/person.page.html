@@ -51,6 +51,18 @@
               <ion-badge slot="end">{{person.counter}}</ion-badge>
             </ion-item>
             <ion-item>
+              <ion-buttons>
+                <ion-button
+                  (click)="onResetCounter()"
+                  color="secondary"
+                  fill="outline"
+                >
+                  RESET COUNTER
+                  <ion-icon slot="end" name="refresh-outline"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+            <ion-item>
               <ion-label>
                 <h2>Notify when detected:</h2>
                 <p>{{person.doNotify ? 'Yes' : 'No'}}</p>
