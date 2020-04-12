@@ -36,6 +36,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     series: this.chartSeries,
   };
   public updateChart = false;
+  private reflowInterval;
   /****/
   public selectedRaspi = null;
   public dashboard: Dashboard;
@@ -54,6 +55,9 @@ export class DashboardPage implements OnInit, OnDestroy {
     this.isLoading = true;
     this.dashboardSub = this.dashboardService.dashboard.subscribe((dashbrd) => {
       if (dashbrd) {
+        if (this.reflowInterval) {
+          clearInterval(this.reflowInterval);
+        }
         this.dashboard = dashbrd;
         if (this.chartSeries.length > 0) {
           this.chartSeries = [];
@@ -82,6 +86,9 @@ export class DashboardPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.reflowInterval) {
+      clearInterval(this.reflowInterval);
+    }
     this.dashboardSub.unsubscribe();
   }
 
@@ -113,6 +120,14 @@ export class DashboardPage implements OnInit, OnDestroy {
     setTimeout(() => {
       try {
         chart.reflow();
+        this.reflowInterval = setInterval(
+          function reflowChart() {
+            if (chart.reflow) {
+              chart.reflow();
+            }
+          }.bind(this),
+          1000
+        );
         chart.update(this.chartOptions);
       } catch (err) {}
     }, 100);
