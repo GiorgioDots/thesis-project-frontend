@@ -15,7 +15,7 @@
   </div>
   <ion-grid *ngIf="!isLoading">
     <ion-row>
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="8" offset-md="2">
         <ion-item lines="none">
           <ion-label>
             <h1>{{raspberry.name}}</h1>
@@ -25,7 +25,7 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="8" offset-md="2">
         <ion-item lines="none">
           <ion-buttons slot="end">
             <ion-button color="secondary" (click)="onEdit()">
@@ -37,7 +37,7 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="8" offset-md="2">
         <ion-item>
           <ion-label
             >Status: {{raspberry.isActive ? 'active' : 'disabled'}}</ion-label
@@ -56,7 +56,7 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="8" offset-md="2">
         <ion-item>
           <ion-label>
             Resolution: {{raspberry.resolution}}
@@ -65,7 +65,7 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="8" offset-md="2">
         <ion-item>
           <ion-label>
             Confidence: {{raspberry.confidence}}
@@ -74,7 +74,7 @@
       </ion-col>
     </ion-row>
     <ion-row *ngIf="raspberry.wifiSSID">
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="8" offset-md="2">
         <ion-item>
           <ion-label>
             Wifi Connected: {{raspberry.wifiSSID}}
@@ -83,7 +83,7 @@
       </ion-col>
     </ion-row>
     <ion-row *ngIf="raspberry.lastImages.length > 0">
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="8" offset-md="2">
         <ion-item lines="none">
           <ion-label>Live images:</ion-label>
         </ion-item>
