@@ -1,0 +1,182 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Settings</ion-title>
+    <ion-buttons slot="end">
+      <ion-button href="https://github.com/GiorgioDots" target="_blank">
+        <ion-icon slot="icon-only" name="logo-github"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div *ngIf="isLoading" id="container">
+    <ion-spinner color="tertiary"></ion-spinner>
+  </div>
+  <form
+    (ngSubmit)="onSubmit()"
+    [formGroup]="userSettingsForm"
+    *ngIf="!isLoading"
+  >
+    <ion-grid>
+      <ion-row>
+        <ion-col size-sm="12" size-xl="4" offset-sm="0" offset-xl="4">
+          <ion-list>
+            <ion-item-group>
+              <ion-item-divider sticky>
+                <ion-text color="dark">
+                  <h4>Modify Your Settings</h4>
+                </ion-text>
+              </ion-item-divider>
+              <ion-item>
+                <ion-label color="medium" position="floating">
+                  Name
+                </ion-label>
+                <ion-input
+                  type="text"
+                  formControlName="name"
+                  clearInput
+                ></ion-input>
+              </ion-item>
+              <ion-item
+                lines="none"
+                *ngIf="userSettingsForm.get('name').invalid && userSettingsForm.get('name').touched"
+              >
+                <ion-label color="danger" class="error-label"
+                  >Name is required.</ion-label
+                >
+              </ion-item>
+              <ion-item>
+                <ion-label color="medium" position="stacked">
+                  Email
+                </ion-label>
+                <ion-input
+                  type="text"
+                  formControlName="email"
+                  clearInput
+                ></ion-input>
+              </ion-item>
+              <ion-item
+                lines="none"
+                *ngIf="userSettingsForm.get('email').invalid && userSettingsForm.get('email').touched"
+              >
+                <ion-label color="danger" class="error-label"
+                  >Please insert a valid email.</ion-label
+                >
+              </ion-item>
+              <ion-item>
+                <ion-label color="medium" position="stacked">
+                  Insert here a new password to change it
+                </ion-label>
+                <ion-input
+                  type="password"
+                  formControlName="password"
+                  clearInput
+                ></ion-input>
+              </ion-item>
+              <ion-item
+                lines="none"
+                *ngIf="userSettingsForm.get('password').invalid && userSettingsForm.get('password').touched"
+              >
+                <ion-label color="danger" class="error-label"
+                  >Please insert a password with 8 min characters.</ion-label
+                >
+              </ion-item>
+            </ion-item-group>
+            <ion-item-divider
+              class="middle"
+              style="border-bottom: none;"
+            ></ion-item-divider>
+            <ion-item-group formArrayName="telegramIds">
+              <ion-item-divider sticky style="border: 1px solid lightgray;">
+                <ion-text color="dark">
+                  <h4>Telegram Ids</h4>
+                </ion-text>
+                <ion-buttons slot="end">
+                  <ion-button color="secondary" (click)="onAddTelegramId()">
+                    ADD
+                    <ion-icon slot="end" name="add"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-item-divider>
+              <div
+                *ngFor="let telegramId of telegramIds.controls; let i = index"
+              >
+                <div
+                  [formGroupName]="i"
+                  style="border: 1px solid lightgray; border-top: none;"
+                >
+                  <ion-item lines="none">
+                    <ion-label color="medium"
+                      >Telegram configuration {{i+1}}</ion-label
+                    >
+                    <ion-buttons slot="end">
+                      <ion-button
+                        color="danger"
+                        (click)="onRemoveTelegramId(i)"
+                      >
+                        <ion-icon slot="icon-only" name="trash"></ion-icon>
+                      </ion-button>
+                    </ion-buttons>
+                  </ion-item>
+                  <ion-item lines="none">
+                    <ion-label color="medium" position="stacked"
+                      >Telegram Chat Name</ion-label
+                    >
+                    <ion-input
+                      type="text"
+                      formControlName="name"
+                      clearInput
+                    ></ion-input>
+                  </ion-item>
+                  <ion-item
+                    lines="none"
+                    *ngIf="telegramIds.get(i+'.name').invalid && telegramIds.get(i+'.name').touched"
+                  >
+                    <ion-label color="danger" class="error-label"
+                      >Telegram Chat Name is required.</ion-label
+                    >
+                  </ion-item>
+                  <ion-item lines="none">
+                    <ion-label color="medium" position="stacked"
+                      >Telegram Chat Id</ion-label
+                    >
+                    <ion-input
+                      type="text"
+                      formControlName="telegramId"
+                      clearInput
+                    ></ion-input>
+                  </ion-item>
+                  <ion-item
+                    lines="none"
+                    *ngIf="telegramIds.get(i+'.telegramId').invalid && telegramIds.get(i+'.telegramId').touched"
+                  >
+                    <ion-label color="danger" class="error-label"
+                      >Telegram Chat Id is required.</ion-label
+                    >
+                  </ion-item>
+                </div>
+              </div>
+            </ion-item-group>
+            <ion-item lines="none">
+              <ion-buttons slot="end">
+                <ion-button color="secondary" (click)="onCancel()"
+                  >CANCEL</ion-button
+                >
+                <ion-button
+                  color="secondary"
+                  fill="solid"
+                  type="submit"
+                  [disabled]="userSettingsForm.invalid"
+                  >SAVE</ion-button
+                >
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

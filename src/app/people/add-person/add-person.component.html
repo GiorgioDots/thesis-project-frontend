@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+    <ion-title>Create a known Person</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div *ngIf="isLoading" id="container">
+    <ion-spinner color="tertiary"></ion-spinner>
+  </div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="personForm" *ngIf="!isLoading">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input
+              clearInput
+              type="text"
+              formControlName="name"
+            ></ion-input>
+          </ion-item>
+          <ion-item
+            lines="none"
+            *ngIf="
+              personForm.get('name').invalid && personForm.get('name').touched
+            "
+          >
+            <ion-label color="danger" class="error-label"
+              >The person name is required.</ion-label
+            >
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Description</ion-label>
+            <ion-textarea rows="3" formControlName="description"></ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item lines="none">
+            <ion-label>Notify when detected</ion-label>
+            <ion-checkbox formControlName="doNotify"></ion-checkbox>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <app-image-picker
+            [showPreview]="personForm.get('image').value"
+            (imagePick)="onImagePicked($event)"
+          ></app-image-picker>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item lines="none">
+            <ion-buttons slot="end">
+              <ion-button
+                color="secondary"
+                fill="solid"
+                type="submit"
+                [disabled]="personForm.invalid"
+                >CREATE</ion-button
+              >
+            </ion-buttons>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

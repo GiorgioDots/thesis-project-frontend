@@ -1,0 +1,8 @@
+{
+  "appId": "io.giorgiodots.raspiface.utility",
+  "appName": "RaspiFace-Utility",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}

@@ -1,0 +1,74 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>People</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onAddPerson()">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+      <ion-button href="https://github.com/GiorgioDots" target="_blank">
+        <ion-icon slot="icon-only" name="logo-github"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="isLoading" id="container">
+    <ion-spinner color="tertiary"></ion-spinner>
+  </div>
+  <ion-grid *ngIf="!isLoading">
+    <ion-row>
+      <ion-col size-sm="8" offset-sm="2">
+        <ion-searchbar
+          placeHolder="Search by name"
+          (ionInput)="onSearch($event)"
+          animated
+        ></ion-searchbar>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-sm="8" offset-sm="2">
+        <ion-list *ngFor="let person of filteredPeople">
+          <ion-item-sliding *ngIf="!isDesktop">
+            <ion-item button (click)="onOpenPerson(person._id)">
+              <ion-thumbnail slot="start">
+                <img [src]="person.imageUrl" />
+              </ion-thumbnail>
+              <ion-label>
+                <h3>{{person.name}}</h3>
+                <p>{{person.description}}</p>
+                <p>Updated at: {{person.updatedAt | date : 'medium'}}</p>
+              </ion-label>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option
+                color="danger"
+                (click)="onDeletePerson(person._id)"
+              >
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+          <ion-item button *ngIf="isDesktop" (click)="onOpenPerson(person._id)">
+            <ion-thumbnail slot="start">
+              <img [src]="person.imageUrl" />
+            </ion-thumbnail>
+            <ion-label>
+              <h3>{{person.name}}</h3>
+              <p>{{person.description}}</p>
+              <p>Updated at: {{person.updatedAt | date : 'medium'}}</p>
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button color="danger" (click)="onDeletePerson(person._id)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

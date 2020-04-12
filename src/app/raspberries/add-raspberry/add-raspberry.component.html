@@ -1,0 +1,149 @@
+<ion-header>
+  <ion-toolbar color="tertiary">
+    <ion-title>Configure a new Raspberry</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="isLoading" id="container">
+    <ion-spinner color="tertiary"></ion-spinner>
+  </div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="raspiForm" *ngIf="!isLoading">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">RaspiId</ion-label>
+            <ion-input
+              clearInput
+              type="text"
+              formControlName="raspiId"
+            ></ion-input>
+          </ion-item>
+          <ion-item
+            lines="none"
+            *ngIf="
+              raspiForm.get('raspiId').invalid &&
+              raspiForm.get('raspiId').touched
+            "
+          >
+            <ion-label color="danger" class="error-label">
+              RaspiId is required.
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input
+              clearInput
+              type="text"
+              formControlName="name"
+            ></ion-input>
+          </ion-item>
+          <ion-item
+            lines="none"
+            *ngIf="
+              raspiForm.get('name').invalid && raspiForm.get('name').touched
+            "
+          >
+            <ion-label color="danger" class="error-label">
+              The raspberry name is required.
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item lines="none">
+            <ion-label>Use Wifi?</ion-label>
+            <ion-checkbox formControlName="useWifi"></ion-checkbox>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="this.raspiForm.get('useWifi').value">
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Wifi SSID</ion-label>
+            <ion-input
+              clearInput
+              type="text"
+              formControlName="wifiSSID"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="this.raspiForm.get('useWifi').value">
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Wifi Password</ion-label>
+            <ion-input
+              clearInput
+              type="password"
+              formControlName="wifiPassword"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item lines="none">
+            <ion-label>Confidence (suggested 50)</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-range
+              formControlName="confidence"
+              color="tertiary"
+              min="1"
+              max="99"
+              pin="true"
+            >
+              <ion-label slot="start">LOW</ion-label>
+              <ion-label slot="end">HIGH</ion-label>
+            </ion-range>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label>Resolution</ion-label>
+            <ion-select
+              formControlName="resolution"
+              cancelText="Cancel"
+              okText="Okay"
+            >
+              <ion-select-option
+                *ngFor="let resolution of resolutions"
+                [value]="resolution"
+                >{{ resolution }}</ion-select-option
+              >
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="10" offset-sm="1">
+          <ion-item lines="none">
+            <ion-buttons slot="end">
+              <ion-button
+                color="secondary"
+                fill="solid"
+                type="submit"
+                [disabled]="raspiForm.invalid"
+                >CREATE</ion-button
+              >
+            </ion-buttons>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
