@@ -44,14 +44,16 @@ export class PeoplePage implements OnInit, OnDestroy {
   ionViewWillEnter() {
     this.isLoading = true;
     this.peopleService.getPeople(this.page, this.perPage).subscribe(
-      (response) => {
+      () => {
         this.isLoading = false;
       },
       (error) => {
         console.log(error);
         let msg = "Cannot update the data. Please try again later";
-        if (error.error.message) {
-          msg = error.error.message;
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.isLoading = false;
@@ -73,8 +75,10 @@ export class PeoplePage implements OnInit, OnDestroy {
       (error) => {
         console.log(error);
         let msg = "Cannot delete the person. Please try again later";
-        if (error.error.message) {
-          msg = error.error.message;
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
         }
         this.showToast(msg, "danger");
         this.isLoading = false;

@@ -57,6 +57,12 @@ export class AuthPage implements OnInit {
       },
       (error) => {
         loadingEl.dismiss();
+        let msg = "Cannot authenticate. Please try again later.";
+        if (error.error) {
+          if (error.error.message) {
+            msg = error.error.message;
+          }
+        }
         this.showToast(error.error.message, "danger");
       }
     );

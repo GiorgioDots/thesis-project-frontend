@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  BACKEND_URL: "http://localhost:8080",
-  WS_CONTROLLER_URL: "http://localhost:8081"
+  BACKEND_URL: "https://raspiface-backend.herokuapp.com",
+  WS_CONTROLLER_URL: "https://raspiface-wscontroller.herokuapp.com",
 };
