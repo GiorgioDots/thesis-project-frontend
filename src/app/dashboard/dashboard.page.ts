@@ -43,6 +43,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   public isLoading = false;
   public plantStatusColor;
   public selectedAction = null;
+  public hasMostDetectedP: boolean;
   private dashboardSub: Subscription;
 
   constructor(
@@ -62,13 +63,17 @@ export class DashboardPage implements OnInit, OnDestroy {
         if (this.chartSeries.length > 0) {
           this.chartSeries = [];
         }
-        for (let person of this.dashboard.people) {
-          this.chartSeries.push({
-            type: undefined,
-            name: person.name,
-            data: [person.counter],
-          });
-        }
+        this.hasMostDetectedP = false;
+        this.dashboard.people.forEach((p) => {
+          if (p.counter > 0) {
+            this.hasMostDetectedP = true;
+            this.chartSeries.push({
+              type: undefined,
+              name: p.name,
+              data: [p.counter],
+            });
+          }
+        });
         this.chartOptions.series = this.chartSeries;
         this.updateChart = true;
         if (this.dashboard.plantStatus === "offline") {

@@ -54,7 +54,7 @@
         </ion-item>
       </ion-col>
     </ion-row>
-    <ion-row *ngIf="dashboard.people.length > 0">
+    <ion-row *ngIf="dashboard.people.length > 0 && hasMostDetectedP">
       <ion-col size-lg="8" offset-lg="2">
         <ion-card>
           <highcharts-chart
