@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController, ToastController } from '@ionic/angular';
-import { Validators, FormGroup, FormControl } from '@angular/forms';
-import { PeopleService } from '../people.service';
+import { Component, OnInit } from "@angular/core";
+import { ModalController, ToastController } from "@ionic/angular";
+import { Validators, FormGroup, FormControl } from "@angular/forms";
+import { PeopleService } from "../people.service";
 
 @Component({
-  selector: 'app-add-person',
-  templateUrl: './add-person.component.html',
-  styleUrls: ['./add-person.component.scss']
+  selector: "app-add-person",
+  templateUrl: "./add-person.component.html",
+  styleUrls: ["./add-person.component.scss"],
 })
 export class AddPersonComponent implements OnInit {
   public personForm: FormGroup;
@@ -21,32 +21,32 @@ export class AddPersonComponent implements OnInit {
   ngOnInit() {
     this.personForm = new FormGroup({
       name: new FormControl(null, [Validators.required]),
-      description: new FormControl(''),
+      description: new FormControl(""),
       doNotify: new FormControl(true, [Validators.required]),
-      image: new FormControl(null)
+      image: new FormControl(null),
     });
   }
 
   onCancel() {
-    this.modalCtrl.dismiss(null, 'cancel');
+    this.modalCtrl.dismiss(null, "cancel");
   }
 
   onSubmit() {
     this.isLoading = true;
     this.peopleService.createPerson(this.personForm.value).subscribe(
       () => {
-        this.showToast('Person Created Successfully', 'success');
+        this.showToast("Person Created Successfully", "success");
         this.onCancel();
       },
-      error => {
+      (error) => {
         console.log(error);
-        let msg = 'Cannot create the person. Please try again later';
+        let msg = "Cannot create the person. Please try again later";
         if (error.error) {
           if (error.error.message) {
             msg = error.error.message;
           }
         }
-        this.showToast(msg, 'danger');
+        this.showToast(msg, "danger");
         this.isLoading = false;
       }
     );
@@ -54,9 +54,15 @@ export class AddPersonComponent implements OnInit {
 
   onImagePicked(imageData: string | File) {
     let imageFile;
-    if (typeof imageData === 'string') {
+    if (typeof imageData === "string") {
       try {
-        imageFile = base64toBlob(imageData.replace('data:image/png;base64,', ''), 'image/png');
+        let data = imageData;
+        if (imageData.includes("data:image/png;base64,")) {
+          data = imageData.replace("data:image/png;base64,", "");
+        } else if (imageData.includes("data:image/jpeg;base64,")) {
+          data = imageData.replace("data:image/jpeg;base64,", "");
+        }
+        imageFile = base64toBlob(data, "image/png");
       } catch (error) {
         console.log(error);
         return;
@@ -73,14 +79,14 @@ export class AddPersonComponent implements OnInit {
       color: color,
       message: message,
       duration: 2500,
-      keyboardClose: true
+      keyboardClose: true,
     });
     alertEl.present();
   }
 }
 
 function base64toBlob(base64Data, contentType) {
-  contentType = contentType || '';
+  contentType = contentType || "";
   const sliceSize = 1024;
   const byteCharacters = atob(base64Data);
   const bytesLength = byteCharacters.length;
