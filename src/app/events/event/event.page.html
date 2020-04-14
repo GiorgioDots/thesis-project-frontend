@@ -23,12 +23,12 @@
         <ion-card>
           <img [src]="event.imageUrl" />
           <ion-card-header>
-            <ion-card-title>Madison, WI</ion-card-title>
-            <ion-card-subtitle>RaspiId: {{event.raspiId}}</ion-card-subtitle>
+            <ion-card-title>RaspiId: {{event.raspiId}}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             <h2>Description:</h2>
             <p>{{event.description}}</p>
+            <p>Detected at: {{event.createdAt | date:'medium'}}</p>
           </ion-card-content>
           <ion-item (click)="goToRaspberry()" button detail>
             <ion-label>
