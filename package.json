@@ -29,7 +29,7 @@
     "@ionic/angular": "^5.0.0",
     "@ionic/pwa-elements": "^1.5.2",
     "core-js": "^2.5.4",
-    "highcharts": "^8.0.4",
+    "highcharts": "^8.1.1",
     "highcharts-angular": "^2.4.0",
     "ngx-socket-io": "^3.0.1",
     "rxjs": "~6.5.1",
